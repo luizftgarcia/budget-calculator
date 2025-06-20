@@ -119,22 +119,32 @@
 
     <script>
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
+        // Substitua todo o seu objeto 'pricing' por este bloco corrigido
         const pricing = {
             usdRate: 5.40,
-            impl_hourly_rate_brl: 160,
+            impl_hourly_rate_brl: 160, // 4 engenheiros @ R$40/h
             projectTiers: {
                 "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280,   tokens_per_message: 900 },
                 "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920,   tokens_per_message: 1650 },
                 "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 3000 },
                 "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 5350 }
             },
-            hostingerVps: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
-            database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 } },
-            audio: { "Nenhum": { monthly_cost_usd: 0 }, "Iniciante": { monthly_cost_usd: 5 } },
             chatgpt: { 
-                "GPT-3.5-Turbo": { cost_per_1k_messages_usd: 0.05 }, "GPT-4.1 Nano":  { cost_per_1k_messages_usd: 0.08 },
-                "GPT-4o Mini":   { cost_per_1k_messages_usd: 0.15 }, "GPT-4.1 Mini":  { cost_per_1k_messages_usd: 0.25 },
-                "GPT-4o":        { cost_per_1k_messages_usd: 2.50 }, "GPT-4.1 Turbo": { cost_per_1k_messages_usd: 3.00 }
+                "GPT-3.5-Turbo": { cost_per_1k_messages_usd: 0.05 },
+                "GPT-4.1 Nano":  { cost_per_1k_messages_usd: 0.08 },
+                "GPT-4o Mini":   { cost_per_1k_messages_usd: 0.15 },
+                "GPT-4.1 Mini":  { cost_per_1k_messages_usd: 0.25 },
+                "GPT-4o":        { cost_per_1k_messages_usd: 2.50 },
+                "GPT-4.1 Turbo": { cost_per_1k_messages_usd: 3.00 }
+            },
+            hostingerVps: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
+            database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25, overage_mau_usd: 0.00325, overage_db_gb_usd: 0.125 } },
+            audio: {
+                "Nenhum": { monthly_cost_usd: 0 },
+                "Iniciante": { monthly_cost_usd: 5 },
+                "Criador": { monthly_cost_usd: 22 },
+                "Profissional": { monthly_cost_usd: 99 },
+                "Empresarial": { monthly_cost_usd: 330 }
             },
             other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
         };
