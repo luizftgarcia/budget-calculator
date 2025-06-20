@@ -79,11 +79,26 @@
                                     <option value="GPT-4.1 Turbo">GPT-4.1 Turbo (Performance Máxima)</option>
                                 </select>
                             </div>
-                            <div>
-                                <label for="monthlyMessages" class="label">Total de Mensagens/Mês</label>
-                                <input type="number" id="monthlyMessages" class="input" value="10000">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label for="iaMonthlyClients" class="label">Clientes/Mês</label>
+                                    <input type="number" id="iaMonthlyClients" class="input" value="30">
+                                </div>
+                                <div>
+                                    <label for="iaMessagesPerConvo" class="label">Msgs/Conversa</label>
+                                    <input type="number" id="iaMessagesPerConvo" class="input" value="20">
+                                </div>
+                                <div>
+                                    <label for="iaMessageSize" class="label">Tamanho Msg</label>
+                                    <select id="iaMessageSize" class="select">
+                                        <option value="Curta">Curta</option>
+                                        <option value="Média">Média</option>
+                                        <option value="Longa">Longa</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
+                    </div>
                     </div>
                     <div class="card">
                         <h3 class="card-title mb-4">Banco de Dados (Supabase)</h3>
@@ -93,14 +108,32 @@
                     </div>
                      <div class="card">
                         <h3 class="card-title mb-4">Módulo de Voz (ElevenLabs)</h3>
-                        <select id="audioPlan" class="select" onchange="calculateCosts()">
-                            <option value="Nenhum">Nenhum</option>
-                            <option value="Iniciante">Iniciante (30 min/mês, $5)</option>
-                            <option value="Criador">Criador (100 min/mês, $22)</option>
-                            <option value="Profissional">Profissional (500 min/mês, $99, Clonagem de Voz)</option>
-                            <option value="Empresarial">Empresarial (2000 min/mês, $330)</option>
-                            <option value="Corporativo">Corporativo (Preço Personalizado)</option>
-                        </select>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="label">Uso de Áudio</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="audioMonthlyConvos" class="label !text-xs !mb-1">Conversas com Áudio/Mês</label>
+                                        <input type="number" id="audioMonthlyConvos" class="input" value="100">
+                                    </div>
+                                    <div>
+                                        <label for="audioMinutesPerConvo" class="label !text-xs !mb-1">Minutos/Conversa</label>
+                                        <input type="number" id="audioMinutesPerConvo" class="input" value="1.5" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="audioPlan" class="label">Qualidade da Voz (Plano Base)</label>
+                                <select id="audioPlan" class="select">
+                                        <option value="Nenhum">Nenhum</option>
+                                        <option value="Iniciante">Iniciante (30 min/mês, $5)</option>
+                                        <option value="Criador">Criador (100 min/mês, $22)</option>
+                                        <option value="Profissional">Profissional (500 min/mês, $99, Clonagem de Voz)</option>
+                                        <option value="Empresarial">Empresarial (2000 min/mês, $330)</option>
+                                        <option value="Corporativo">Corporativo (Preço Personalizado)</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
