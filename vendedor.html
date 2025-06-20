@@ -40,133 +40,24 @@
                 <div class="space-y-6">
                     <div class="card"><h3 class="card-title mb-4">Dados do Cliente</h3><div class="space-y-4"><div><label for="clientName" class="label">Nome</label><input type="text" id="clientName" class="input"></div><div><label for="clientEmail" class="label">Email</label><input type="email" id="clientEmail" class="input"></div></div></div>
                     <div class="card">
-                        <h3 class="card-title mb-4">Nível do Projeto</h3>
-                        <select id="projectTier" class="select" onchange="calculateCosts()">
-                            <option value="Básico">Básico (Setup: 24h, Suporte: 16h/mês)</option>
-                            <option value="Médio">Médio (Setup: 56h, Suporte: 24h/mês)</option>
-                            <option value="Avançado">Avançado (Setup: 112h, Suporte: 32h/mês)</option>
-                            <option value="Enterprise">Enterprise (Setup: 224h, Suporte: 40h/mês)</option>
-                        </select>
+                        <h3 class="card-title mb-4">Nível e Esforço do Projeto</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="projectTier" class="label">Nível do Projeto</label>
+                                <select id="projectTier" class="select" onchange="updateHoursFromTier()">
+                                    <option value="Básico">Básico</option>
+                                    <option value="Médio">Médio</option>
+                                    <option value="Avançado">Avançado</option>
+                                    <option value="Enterprise">Enterprise</option>
+                                    <option value="Personalizado" disabled>Personalizado</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="implementationHours" class="label">Horas de Setup</label>
+                                <input type="number" id="implementationHours" class="input" oninput="updateTierFromHours()">
+                            </div>
+                        </div>
                     </div>
                      <div class="card">
                         <h3 class="card-title mb-4">Servidor Dedicado (Hostinger)</h3>
-                        <select id="serverPlan" class="select" onchange="calculateCosts()"><option value="KVM 2">KVM 2 (R$ 89,99/mês)</option><option value="KVM 4">KVM 4 (R$ 159,99/mês)</option></select>
-                    </div>
-                </div>
-                <div class="space-y-6">
-                     <div class="card">
-                        <h3 class="card-title mb-4">Módulo de IA (OpenAI)</h3>
-                        <div class="space-y-4">
-                            <div><label for="monthlyMessages" class="label">Total de Mensagens/Mês</label><input type="number" id="monthlyMessages" class="input" value="10000" oninput="calculateCosts()"></div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3 class="card-title mb-4">Banco de Dados (Supabase)</h3>
-                        <select id="supabasePlan" class="select" onchange="calculateCosts()">
-                            <option value="Gratuito">Gratuito</option><option value="Profissional">Profissional</option>
-                        </select>
-                    </div>
-                     <div class="card">
-                        <h3 class="card-title mb-4">Módulo de Voz (ElevenLabs)</h3>
-                        <select id="audioPlan" class="select" onchange="calculateCosts()">
-                            <option value="Nenhum">Nenhum</option>
-                            <option value="Iniciante">Iniciante</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mt-6">
-                <h3 class="card-title mb-4">Valores de Referência e Finais</h3>
-                <div class="bg-muted p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Implantação)</p><p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
-                    <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Mensal)</p><p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
-                </div>
-                <hr class="border-border my-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label for="finalImplementationValue" class="label">Valor de Implantação Acertado</label><input type="number" id="finalImplementationValue" class="input" placeholder="0.00"></div>
-                    <div><label for="finalMonthlyValue" class="label">Valor Mensal Acertado</label><input type="number" id="finalMonthlyValue" class="input" placeholder="0.00"></div>
-                </div>
-            </div>
-            
-            <div class="card mt-6"><button type="button" id="sendBudgetButton" class="btn btn-primary">Registrar Proposta</button><div id="feedbackMessage" class="mt-4 text-center h-4"></div></div>
-        </form>
-    </main>
-
-    <script>
-        const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
-        const pricing = {
-            usdRate: 5.40,
-            projectTiers: {
-                "Básico":     { impl_labor_cost: 3840,  support_monthly_cost: 320, tokens_per_message: 900 },
-                "Médio":      { impl_labor_cost: 8960,  support_monthly_cost: 480, tokens_per_message: 1650 },
-                "Avançado":   { impl_labor_cost: 17920, support_monthly_cost: 640, tokens_per_message: 3000 },
-                "Enterprise": { impl_labor_cost: 35840, support_monthly_cost: 800, tokens_per_message: 5350 }
-            },
-            server: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
-            database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 } },
-            audio: { "Nenhum": { monthly_cost_usd: 0 }, "Iniciante": { monthly_cost_usd: 5 } },
-            ai: { cost_per_million_tokens_usd: 0.40 },
-            other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
-        };
-        
-        function getVal(id) { return document.getElementById(id).value; }
-        function getNum(id) { return parseFloat(getVal(id)) || 0; }
-
-        function calculateCosts() {
-            // 1. Calcular Custo Mensal da Infraestrutura
-            const rate = pricing.usdRate;
-            let monthlyInfraBRL = pricing.server[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
-            let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd + pricing.audio[getVal('audioPlan')].monthly_cost_usd;
-            const projectTierKey = getVal('projectTier');
-            const conversations = getNum('monthlyMessages') / 30; // Convertendo mensagens mensais para diárias para o cálculo
-            const tokensPerMessage = pricing.projectTiers[projectTierKey].tokens_per_message;
-            const monthlyMillionTokens = (conversations * tokensPerMessage * 30) / 1000000;
-            monthlyInfraUSD += monthlyMillionTokens * pricing.ai.cost_per_million_tokens_usd;
-            const totalMonthlyInfraCost = monthlyInfraBRL + (monthlyInfraUSD * rate);
-
-            // 2. Obter Custos de Mão de Obra do Nível do Projeto
-            const implLaborCost = pricing.projectTiers[projectTierKey].impl_labor_cost;
-            const supportMonthlyCost = pricing.projectTiers[projectTierKey].support_monthly_cost;
-
-            // 3. Calcular Valores de Referência Finais
-            const finalImplementationCost = implLaborCost + (totalMonthlyInfraCost * 12);
-            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 3);
-
-            // 4. Exibir na tela
-            document.getElementById('implementationCost').textContent = `R$ ${finalImplementationCost.toFixed(2)}`;
-            document.getElementById('monthlyRevenue').textContent = `R$ ${finalMonthlyCost.toFixed(2)}`;
-        }
-        
-        function validateEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
-        async function sendBudget() {
-            const feedbackEl = document.getElementById('feedbackMessage'); feedbackEl.innerHTML = '';
-            const clientName = getVal('clientName'); const clientEmail = getVal('clientEmail');
-            const finalImplementation = getNum('finalImplementationValue'); const finalMonthly = getNum('finalMonthlyValue');
-            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) { feedbackEl.innerHTML = `<p class="error-message">Preencha os dados do cliente e os valores finais.</p>`; return; }
-            if (!validateEmail(clientEmail)) { feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`; return; }
-            const budgetData = {
-                source: "calculadora_vendedores_v4", clientInfo: { name: clientName, email: clientEmail },
-                projectTier: getVal('projectTier'),
-                costDetails: {
-                    audioPlan: getVal('audioPlan'), serverPlan: getVal('hostingerVpsPlan'), supabasePlan: getVal('supabasePlan'),
-                    monthlyMessages: getNum('monthlyMessages'),
-                },
-                costBasis: { implementation_base_cost_brl: document.getElementById('implementationCost').textContent, suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent, },
-                finalDeal: { implementation_value_brl: finalImplementation, monthly_revenue_brl: finalMonthly, }
-            };
-            feedbackEl.textContent = "Registrando proposta...";
-            try {
-                const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(budgetData) });
-                if (!response.ok) throw new Error(`Erro ${response.status}`);
-                feedbackEl.innerHTML = `<p style="color: hsl(142.1 76.2% 46.5%);">Proposta registrada com sucesso!</p>`;
-                document.getElementById('vendedor-form').reset(); calculateCosts();
-            } catch (error) { console.error("Erro:", error); feedbackEl.innerHTML = `<p class="error-message">Falha no registro.</p>`; }
-        }
-        
-        document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calculateCosts));
-        document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
-        window.onload = calculateCosts;
-    </script>
-</body>
-</html>
+                        <select id="serverPlan" class="select" onchange="calculateCosts()"><option value="KVM 2">K
