@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Orçamentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: hsl(222.2 84% 4.9%);
+            --foreground: hsl(210 40% 98%);
+            --card: hsl(222.2 84% 4.9%);
+            --card-foreground: hsl(210 40% 98%);
+            --primary: hsl(217.2 91.2% 59.8%);
+            --primary-foreground: hsl(210 40% 98%);
+            --border: hsl(217.2 32.6% 17.5%);
+            --radius: 0.75rem;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+        .card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: calc(var(--radius) - 4px);
+            font-weight: 600;
+            font-size: 1rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: hsl(217.2 91.2% 59.8% / 0.9);
+        }
+    </style>
+</head>
+<body class="min-h-screen w-full flex items-center justify-center p-4">
+    <main class="w-full max-w-md text-center">
+        <h1 class="text-4xl font-extrabold tracking-tighter mb-4">Portal de Orçamentos</h1>
+        <p class="text-slate-400 mb-8">Selecione o seu perfil de acesso.</p>
+        
+        <div class="card space-y-6">
+            <a href="/budget-calculator/vendedores.html" class="btn">
+                Acesso Vendedor
+            </a>
+            <a href="/budget-calculator/parceiros.html" class="btn">
+                Acesso Parceiro
+            </a>
+        </div>
+    </main>
+</body>
+</html>
