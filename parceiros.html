@@ -179,6 +179,7 @@
             const monthlyMillionTokens = (conversations * tokensPerMessage * 30) / 1000000;
             monthlyInfraUSD += monthlyMillionTokens * pricing.ai.cost_per_million_tokens_usd;
             const totalMonthlyInfraCost = monthlyInfraBRL + (monthlyInfraUSD * rate);
+            const implHours = getNum('implementationHours');
             const implLaborCost = implHours * pricing.impl_hourly_rate_brl;
             const supportMonthlyCost = pricing.projectTiers[projectTierKey] ? pricing.projectTiers[projectTierKey].support_monthly_cost : pricing.projectTiers['Básico'].support_monthly_cost;
         
