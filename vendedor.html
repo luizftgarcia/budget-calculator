@@ -269,46 +269,68 @@
         function validateEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
         
         async function sendBudget() {
-            const feedbackEl = document.getElementById('feedbackMessage'); feedbackEl.innerHTML = '';
-            const clientName = getVal('clientName'); const clientEmail = getVal('clientEmail');
-            const finalImplementation = getNum('finalImplementationValue'); const finalMonthly = getNum('finalMonthlyValue');
-            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) { feedbackEl.innerHTML = `<p class="error-message">Preencha os dados do cliente e os valores finais.</p>`; return; }
-            if (!validateEmail(clientEmail)) { feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`; return; }
+            const feedbackEl = document.getElementById('feedbackMessage');
+            feedbackEl.innerHTML = '';
             
+            const clientName = getVal('clientName');
+            const clientEmail = getVal('clientEmail');
+            const finalImplementation = getNum('finalImplementationValue');
+            const finalMonthly = getNum('finalMonthlyValue');
+        
+            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) {
+                feedbackEl.innerHTML = `<p class="error-message">Preencha os dados do cliente e os valores finais.</p>`;
+                return;
+            }
+            if (!validateEmail(clientEmail)) {
+                feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`;
+                return;
+            }
+            
+            // Objeto de dados CORRIGIDO para o webhook
             const budgetData = {
-                source: "calculadora_vendedores_final_corrigida",
+                source: "calculadora_vendedores_final",
                 clientInfo: { name: clientName, email: clientEmail },
                 projectTier: getVal('projectTier'),
                 implementationHours: getNum('implementationHours'),
                 costDetails: {
                     audioPlan: getVal('audioPlan'),
+                    audioMonthlyConvos: getNum('audioMonthlyConvos'),
+                    audioMinutesPerConvo: getNum('audioMinutesPerConvo'),
                     serverPlan: getVal('hostingerVpsPlan'),
                     supabasePlan: getVal('supabasePlan'),
                     chatgptModel: getVal('chatgptModel'),
-                    monthlyMessages: getNum('monthlyMessages'),
+                    // ENVIANDO OS CAMPOS NOVOS EM VEZ DO ANTIGO 'monthlyMessages'
+                    iaMonthlyClients: getNum('iaMonthlyClients'),
+                    iaMessagesPerConvo: getNum('iaMessagesPerConvo'),
+                    iaMessageSize: getVal('iaMessageSize')
                 },
-                costBasis: { implementation_base_cost_brl: document.getElementById('implementationCost').textContent, suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent, },
-                finalDeal: { implementation_value_brl: finalImplementation, monthly_revenue_brl: finalMonthly, }
+                costBasis: { 
+                    implementation_base_cost_brl: document.getElementById('implementationCost').textContent, 
+                    suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent, 
+                },
+                finalDeal: { 
+                    implementation_value_brl: finalImplementation, 
+                    monthly_revenue_brl: finalMonthly, 
+                }
             };
-
+        
             feedbackEl.textContent = "Registrando proposta...";
             try {
-                const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(budgetData) });
+                const response = await fetch(WEBHOOK_URL, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(budgetData) 
+                });
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
+                
                 feedbackEl.innerHTML = `<p style="color: hsl(142.1 76.2% 46.5%);">Proposta registrada com sucesso!</p>`;
                 document.getElementById('vendedor-form').reset();
-                updateHoursFromTier();
-            } catch (error) { console.error("Erro:", error); feedbackEl.innerHTML = `<p class="error-message">Falha no registro.</p>`; }
-        }
-        document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
-        document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
-        
-        document.querySelectorAll('#vendedor-form select, #vendedor-form input').forEach(el => {
-            if (el.id !== 'projectTier' && el.id !== 'implementationHours') {
-                el.addEventListener('input', calculateCosts);
-                el.addEventListener('change', calculateCosts);
+                updateHoursFromTier(); // Reseta os valores para o padrão
+            } catch (error) { 
+                console.error("Erro:", error); 
+                feedbackEl.innerHTML = `<p class="error-message">Falha no registro.</p>`; 
             }
-        });
+        }
         
         document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
         
