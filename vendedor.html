@@ -311,17 +311,24 @@
         }
         
         // Centralizando os event listeners
+        document.querySelectorAll('#vendedor-form select, #vendedor-form input').forEach(el => {
+            el.addEventListener('input', calculateCosts);
+            el.addEventListener('change', calculateCosts); // 'change' é bom para selects
+        });
+        
+        // Adiciona os gatilhos específicos para a sincronização de Nível e Horas
         document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
         document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
-        document.querySelectorAll('input, select').forEach(el => {
-            if (el.id !== 'projectTier' && el.id !== 'implementationHours') {
-                el.addEventListener('input', calculateCosts);
-            }
-        });
+        
+        // Gatilho para o botão de envio
         document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
         
+        // --- Inicialização da Página ---
         function initializePage() {
+            // Define as horas iniciais com base no tier padrão
             updateHoursFromTier();
+            // Nota: O calculateCosts() já é chamado dentro de updateHoursFromTier(),
+            // então a página carregará com os valores já calculados.
         }
         window.onload = initializePage;
     </script>
