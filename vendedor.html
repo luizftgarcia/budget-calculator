@@ -23,7 +23,8 @@
         .label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--muted-foreground); margin-bottom: 0.5rem; }
         .input, .select { display: flex; width: 100%; height: 2.5rem; padding: 0.5rem 0.75rem; background-color: var(--input); border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); font-size: 0.875rem; transition: all 0.2s; }
         .input:focus, .select:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 2px var(--ring); }
-        .btn-primary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 0.75rem 1rem; border-radius: calc(var(--radius) - 2px); font-weight: 600; font-size: 1rem; background-color: var(--primary); color: var(--primary-foreground); cursor: pointer; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.25rem 0.5rem; border-radius: calc(var(--radius) - 2px); font-weight: 500; font-size: 0.75rem; transition: background-color 0.2s; cursor: pointer; border: 1px solid var(--border); }
+        .btn-primary { width: 100%; padding: 0.75rem 1rem; font-weight: 600; font-size: 1rem; background-color: var(--primary); color: var(--primary-foreground); border: none; }
         .error-message { font-size: 0.75rem; color: var(--destructive-foreground); background-color: var(--destructive); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; }
     </style>
 </head>
@@ -37,109 +38,76 @@
         <form id="vendedor-form">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="space-y-6">
+                    <div class="card"><h3 class="card-title mb-4">Dados do Cliente</h3><div class="space-y-4"><div><label for="clientName" class="label">Nome</label><input type="text" id="clientName" class="input"></div><div><label for="clientEmail" class="label">Email</label><input type="email" id="clientEmail" class="input"></div></div></div>
                     <div class="card">
-                        <h3 class="card-title mb-4">Dados do Cliente</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label for="clientName" class="label">Nome</label>
-                                <input type="text" id="clientName" class="input">
-                            </div>
-                            <div>
-                                <label for="clientEmail" class="label">Email</label>
-                                <input type="email" id="clientEmail" class="input">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3 class="card-title mb-4">Eleven Labs (Voz)</h3>
+                        <h3 class="card-title mb-4">Módulo de Voz (ElevenLabs)</h3>
                         <select id="elevenLabsPlan" class="select" onchange="calculateCosts()">
                             <option value="None">Nenhum</option>
-                            <option value="Starter">Starter ($5/mês)</option>
-                            <option value="Creator">Creator ($22/mês)</option>
+                            <option value="Iniciante">Iniciante (30 min/mês)</option>
+                            <option value="Criador">Criador (100 min/mês)</option>
+                            <option value="Profissional">Profissional (500 min/mês)</option>
+                            <option value="Empresarial">Empresarial (2000 min/mês)</option>
                         </select>
                     </div>
                     <div class="card">
-                        <h3 class="card-title mb-4">Hostinger VPS</h3>
-                        <select id="hostingerVpsPlan" class="select" onchange="calculateCosts()">
-                            <option value="KVM 2">KVM 2 (R$ 89,99/mês)</option>
-                            <option value="KVM 4">KVM 4 (R$ 159,99/mês)</option>
-                        </select>
+                        <h3 class="card-title mb-4">Servidor Dedicado (Hostinger)</h3>
+                        <select id="hostingerVpsPlan" class="select" onchange="calculateCosts()"><option value="KVM 2">KVM 2 (R$ 89,99/mês)</option><option value="KVM 4">KVM 4 (R$ 159,99/mês)</option></select>
                     </div>
                 </div>
                 <div class="space-y-6">
                      <div class="card">
-                        <h3 class="card-title mb-4">ChatGPT (OpenAI)</h3>
+                        <h3 class="card-title mb-4">Módulo de IA (OpenAI)</h3>
                         <div class="space-y-4">
-                            <label class="label">Escopo de Uso da IA</label>
-                            <input type="number" id="monthlyMessages" class="input" value="10000" oninput="calculateCosts()" placeholder="Total de mensagens/mês">
+                            <div><label for="chatgptModel" class="label">Modelo de IA</label><select id="chatgptModel" class="select" onchange="calculateCosts()"><option value="GPT-4o Mini">GPT-4o Mini</option><option value="GPT-4o">GPT-4o</option><option value="GPT-4.1 Turbo">GPT-4.1 Turbo</option></select></div>
+                            <div><label for="monthlyMessages" class="label">Total de Mensagens/Mês</label><input type="number" id="monthlyMessages" class="input" value="10000" oninput="calculateCosts()"></div>
                         </div>
                     </div>
                     <div class="card">
-                        <h3 class="card-title mb-4">Supabase (DB)</h3>
-                        <select id="supabasePlan" class="select" onchange="calculateCosts()">
-                            <option value="Free">Free ($0/mês)</option>
-                            <option value="Pro">Pro ($25/mês)</option>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="card-title">Banco de Dados (Supabase)</h3>
+                            <button type="button" id="toggleSupabaseBtn" class="btn hidden">[+/-]</button>
+                        </div>
+                        <select id="supabasePlan" class="select" onchange="handleSupabasePlanChange()">
+                            <option value="Gratuito">Gratuito</option><option value="Profissional">Profissional</option>
                         </select>
+                        <div id="supabaseProUsage" class="hidden mt-4 space-y-2">
+                             <hr class="border-border">
+                             <p class="text-sm font-semibold pt-2">Uso Adicional (Plano Pro)</p>
+                             <div><label for="supabaseMaus" class="label !text-xs">MAUs (acima de 100k)</label><input type="number" id="supabaseMaus" value="0" min="0" class="input" oninput="calculateCosts()"></div>
+                             <div><label for="supabaseDbGb" class="label !text-xs">DB Size (GB) (acima de 8GB)</label><input type="number" id="supabaseDbGb" value="0" min="0" class="input" oninput="calculateCosts()"></div>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3 class="card-title mb-4">Outros Custos Fixos</h3>
-                         <p class="text-sm text-muted-foreground">Domínio (.top) e Email (Business Starter)</p>
-                         <p class="text-lg font-semibold mt-2">R$ 15,41 / mês</p>
-                    </div>
+                    <div class="card"><h3 class="card-title mb-4">Outros Custos Fixos</h3><p class="text-sm text-muted-foreground">Domínio e Email</p><p class="text-lg font-semibold mt-2">R$ 15,41 / mês</p></div>
                 </div>
             </div>
 
             <div class="card mt-6">
-                <h3 class="card-title mb-4">Custos Base e Valores Finais</h3>
+                <h3 class="card-title mb-4">Valores de Referência e Finais</h3>
                 <div class="bg-muted p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="text-center">
-                        <p class="text-sm text-muted-foreground">Custo de Implantação (Base Anual)</p>
-                        <p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-sm text-muted-foreground">Sugestão de Recorrência Mensal (Custo x2)</p>
-                        <p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p>
-                    </div>
+                    <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Implantação)</p><p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
+                    <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Mensal)</p><p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
                 </div>
                 <hr class="border-border my-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="finalImplementationValue" class="label">Valor de Implantação Acertado</label>
-                        <input type="number" id="finalImplementationValue" class="input" placeholder="0.00">
-                    </div>
-                    <div>
-                        <label for="finalMonthlyValue" class="label">Valor Mensal Acertado</label>
-                        <input type="number" id="finalMonthlyValue" class="input" placeholder="0.00">
-                    </div>
+                    <div><label for="finalImplementationValue" class="label">Valor de Implantação Acertado</label><input type="number" id="finalImplementationValue" class="input" placeholder="0.00"></div>
+                    <div><label for="finalMonthlyValue" class="label">Valor Mensal Acertado</label><input type="number" id="finalMonthlyValue" class="input" placeholder="0.00"></div>
                 </div>
             </div>
             
-            <div class="card mt-6">
-                <button type="button" id="sendBudgetButton" class="btn-primary">Registrar Proposta</button>
-                <div id="feedbackMessage" class="mt-4 text-center h-4"></div>
-            </div>
+            <div class="card mt-6"><button type="button" id="sendBudgetButton" class="btn btn-primary">Registrar Proposta</button><div id="feedbackMessage" class="mt-4 text-center h-4"></div></div>
         </form>
     </main>
 
     <script>
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
-
         const pricing = {
             usdRate: 5.40,
             elevenlabs: {
-                "None": { monthly_cost_usd: 0 },
-                "Starter": { monthly_cost_usd: 5 },
-                "Creator": { monthly_cost_usd: 22 },
+                "None": { monthly_cost_usd: 0 }, "Iniciante": { monthly_cost_usd: 5 }, "Criador": { monthly_cost_usd: 22 }, "Profissional": { monthly_cost_usd: 99 }, "Empresarial": { monthly_cost_usd: 330 },
             },
-            hostingerVps: {
-                "KVM 2": { monthly_cost_brl: 89.99 },
-                "KVM 4": { monthly_cost_brl: 159.99 },
-            },
-            supabase: {
-                "Free": { monthly_cost_usd: 0 },
-                "Pro": { monthly_cost_usd: 25 },
-            },
-            chatgpt: { cost_per_1k_messages_usd: 0.10 }, // Custo estimado por 1000 msgs
+            hostingerVps: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 }, },
+            supabase: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25, overage_mau_usd: 0.00325, overage_db_gb_usd: 0.125 } },
+            chatgpt: { "GPT-4o Mini": { cost_per_1k_messages_usd: 0.10 }, "GPT-4o": { cost_per_1k_messages_usd: 1.00 }, "GPT-4.1 Turbo": { cost_per_1k_messages_usd: 1.20 } },
             fixed_brl: { domain_email: (40.99 / 12) + 11.99 }
         };
         
@@ -147,88 +115,70 @@
         function getNum(id) { return parseFloat(getVal(id)) || 0; }
 
         function calculateCosts() {
-            const rate = pricing.usdRate;
-            let monthlyCostBRL = 0;
-            let monthlyCostUSD = 0;
-            
+            const rate = pricing.usdRate; let monthlyCostBRL = 0; let monthlyCostUSD = 0;
             monthlyCostBRL += pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl;
             monthlyCostBRL += pricing.fixed_brl.domain_email;
-            
             monthlyCostUSD += pricing.elevenlabs[getVal('elevenLabsPlan')].monthly_cost_usd;
-            monthlyCostUSD += pricing.supabase[getVal('supabasePlan')].monthly_cost_usd;
-            
-            const totalMessages = getNum('monthlyMessages');
-            monthlyCostUSD += (totalMessages / 1000) * pricing.chatgpt.cost_per_1k_messages_usd;
-
+            const supabasePlan = getVal('supabasePlan');
+            const supabasePricing = pricing.supabase[supabasePlan];
+            monthlyCostUSD += supabasePricing.monthly_cost_usd;
+            if (supabasePlan === 'Profissional') {
+                monthlyCostUSD += getNum('supabaseMaus') * supabasePricing.overage_mau_usd;
+                monthlyCostUSD += getNum('supabaseDbGb') * supabasePricing.overage_db_gb_usd;
+            }
+            const chatGptModel = getVal('chatgptModel');
+            monthlyCostUSD += (getNum('monthlyMessages') / 1000) * pricing.chatgpt[chatGptModel].cost_per_1k_messages_usd;
             const totalMonthlyCost = monthlyCostBRL + (monthlyCostUSD * rate);
-            const totalAnnualCost = totalMonthlyCost * 12;
-            const suggestedMonthly = totalMonthlyCost * 2;
-            
-            document.getElementById('implementationCost').textContent = `R$ ${totalAnnualCost.toFixed(2)}`;
-            document.getElementById('monthlyRevenue').textContent = `R$ ${suggestedMonthly.toFixed(2)}`;
+            document.getElementById('implementationCost').textContent = `R$ ${(totalMonthlyCost * 12).toFixed(2)}`;
+            document.getElementById('monthlyRevenue').textContent = `R$ ${(totalMonthlyCost * 2).toFixed(2)}`;
         }
         
-        function validateEmail(email) {
-            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(String(email).toLowerCase());
+        function handleSupabasePlanChange() {
+            const plan = getVal('supabasePlan');
+            const usageDiv = document.getElementById('supabaseProUsage');
+            const toggleBtn = document.getElementById('toggleSupabaseBtn');
+            if (plan === 'Profissional') {
+                usageDiv.classList.remove('hidden');
+                toggleBtn.classList.remove('hidden');
+            } else {
+                usageDiv.classList.add('hidden');
+                toggleBtn.classList.add('hidden');
+            }
+            calculateCosts();
         }
 
+        document.getElementById('toggleSupabaseBtn').addEventListener('click', () => {
+            const usageDiv = document.getElementById('supabaseProUsage');
+            usageDiv.classList.toggle('hidden');
+        });
+        
+        function validateEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
         async function sendBudget() {
-            const feedbackEl = document.getElementById('feedbackMessage');
-            feedbackEl.innerHTML = '';
-            
-            const clientName = getVal('clientName');
-            const clientEmail = getVal('clientEmail');
-            const finalImplementation = getNum('finalImplementationValue');
-            const finalMonthly = getNum('finalMonthlyValue');
-
-            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) {
-                feedbackEl.innerHTML = `<p class="error-message">Preencha os dados do cliente e os valores finais.</p>`;
-                return;
-            }
-            if (!validateEmail(clientEmail)) {
-                 feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`;
-                return;
-            }
-            
+            const feedbackEl = document.getElementById('feedbackMessage'); feedbackEl.innerHTML = '';
+            const clientName = getVal('clientName'); const clientEmail = getVal('clientEmail');
+            const finalImplementation = getNum('finalImplementationValue'); const finalMonthly = getNum('finalMonthlyValue');
+            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) { feedbackEl.innerHTML = `<p class="error-message">Preencha os dados do cliente e os valores finais.</p>`; return; }
+            if (!validateEmail(clientEmail)) { feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`; return; }
             const budgetData = {
-                source: "calculadora_vendedores",
-                clientInfo: { name: clientName, email: clientEmail },
+                source: "calculadora_vendedores_v2", clientInfo: { name: clientName, email: clientEmail },
                 costDetails: {
-                    elevenLabsPlan: getVal('elevenLabsPlan'),
-                    hostingerVpsPlan: getVal('hostingerVpsPlan'),
-                    supabasePlan: getVal('supabasePlan'),
-                    monthlyMessages: getNum('monthlyMessages'),
+                    elevenLabsPlan: getVal('elevenLabsPlan'), hostingerVpsPlan: getVal('hostingerVpsPlan'), supabasePlan: getVal('supabasePlan'),
+                    chatgptModel: getVal('chatgptModel'), monthlyMessages: getNum('monthlyMessages'),
                 },
-                costBasis: {
-                    implementation_base_cost_brl: document.getElementById('implementationCost').textContent,
-                    suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent,
-                },
-                finalDeal: {
-                    implementation_value_brl: finalImplementation,
-                    monthly_revenue_brl: finalMonthly,
-                }
+                costBasis: { implementation_base_cost_brl: document.getElementById('implementationCost').textContent, suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent, },
+                finalDeal: { implementation_value_brl: finalImplementation, monthly_revenue_brl: finalMonthly, }
             };
-            
             feedbackEl.textContent = "Registrando proposta...";
             try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(budgetData)
-                });
+                const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(budgetData) });
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
-                feedbackEl.innerHTML = `<p class="text-green-400">Proposta registrada com sucesso!</p>`;
-                document.getElementById('vendedor-form').reset();
-                calculateCosts();
-            } catch (error) {
-                console.error("Erro ao enviar webhook:", error);
-                feedbackEl.innerHTML = `<p class="error-message">Falha no registro. Tente novamente.</p>`;
-            }
+                feedbackEl.innerHTML = `<p style="color: hsl(142.1 76.2% 46.5%);">Proposta registrada com sucesso!</p>`;
+                document.getElementById('vendedor-form').reset(); calculateCosts(); handleSupabasePlanChange();
+            } catch (error) { console.error("Erro:", error); feedbackEl.innerHTML = `<p class="error-message">Falha no registro.</p>`; }
         }
         
         document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
-        window.onload = calculateCosts;
+        window.onload = () => { calculateCosts(); handleSupabasePlanChange(); };
     </script>
 </body>
 </html>
