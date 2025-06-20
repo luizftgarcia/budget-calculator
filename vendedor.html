@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/budget-calculator/favicon.ico" type="image/x-icon">
-    <title>Calculadora de Custos para Vendedores</title>
+    <title>Calculadora Interna de Custos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -45,7 +44,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="projectTier" class="label">Nível do Projeto</label>
-                                <select id="projectTier" class="select" onchange="updateHoursFromTier()">
+                                <select id="projectTier" class="select">
                                     <option value="Básico">Básico</option>
                                     <option value="Médio">Médio</option>
                                     <option value="Avançado">Avançado</option>
@@ -55,57 +54,49 @@
                             </div>
                             <div>
                                 <label for="implementationHours" class="label">Horas de Setup</label>
-                                <input type="number" id="implementationHours" class="input" oninput="updateTierFromHours()">
+                                <input type="number" id="implementationHours" class="input">
+                            </div>
+                        </div>
+                    </div>
+                     <div class="card">
+                        <h3 class="card-title mb-4">Servidor Dedicado (Hostinger)</h3>
+                        <select id="hostingerVpsPlan" class="select"><option value="KVM 2">KVM 2 (R$ 89,99/mês)</option><option value="KVM 4">KVM 4 (R$ 159,99/mês)</option></select>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                     <div class="card">
+                        <h3 class="card-title mb-4">Módulo de IA (OpenAI)</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="chatgptModel" class="label">Modelo de IA</label>
+                                <select id="chatgptModel" class="select">
+                                    <option value="GPT-3.5-Turbo">GPT-3.5-Turbo (Mais Econômico)</option>
+                                    <option value="GPT-4.1 Nano">GPT-4.1 Nano (Ultra Econômico)</option>
+                                    <option value="GPT-4o Mini">GPT-4o Mini (Equilibrado)</option>
+                                    <option value="GPT-4.1 Mini">GPT-4.1 Mini (Performance Econômica)</option>
+                                    <option value="GPT-4o">GPT-4o (Inteligência Máxima)</option>
+                                    <option value="GPT-4.1 Turbo">GPT-4.1 Turbo (Performance Máxima)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="monthlyMessages" class="label">Total de Mensagens/Mês</label>
+                                <input type="number" id="monthlyMessages" class="input" value="10000">
                             </div>
                         </div>
                     </div>
                     <div class="card">
-                        <h3 class="card-title mb-4">Módulo de Voz (ElevenLabs)</h3>
-                        <select id="audioPlan" class="select" onchange="calculateCosts()">
-                            <option value="Nenhum">Nenhum</option>
-                            <option value="Iniciante">Iniciante (30 min/mês, $5)</option>
-                            <option value="Criador">Criador (100 min/mês, $22)</option>
-                            <option value="Profissional">Profissional (500 min/mês, $99, Clonagem de Voz)</option>
-                            <option value="Empresarial">Empresarial (2000 min/mês, $330)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="space-y-6">
-                    <div class="card">
-                        <h3 class="card-title mb-4">Módulo de IA (OpenAI)</h3>
-                        <div class="space-y-4">
-                            <div>
-                            <label for="chatgptModel" class="label">Modelo de IA</label>
-                            <select id="chatgptModel" class="select" onchange="calculateCosts()">
-                                <option value="GPT-3.5-Turbo">GPT-3.5-Turbo (Mais Econômico)</option>
-                                <option value="GPT-4.1 Nano">GPT-4.1 Nano (Ultra Econômico)</option>
-                                <option value="GPT-4o Mini">GPT-4o Mini (Equilibrado)</option>
-                                <option value="GPT-4.1 Mini">GPT-4.1 Mini (Performance Econômica)</option>
-                                <option value="GPT-4o">GPT-4o (Inteligência Máxima)</option>
-                                <option value="GPT-4.1 Turbo">GPT-4.1 Turbo (Performance Máxima)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="monthlyMessages" class="label">Total de Mensagens/Mês</label>
-                            <input type="number" id="monthlyMessages" class="input" value="10000" oninput="calculateCosts()">
-                        </div>
-                    </div>
-                </div>
-                    <div class="card">
-                        <div class="flex justify-between items-center mb-4">
-                             <h3 class="card-title">Banco de Dados (Supabase)</h3>
-                             <button type="button" id="toggleSupabaseBtn" class="btn hidden">[+/-]</button>
-                        </div>
-                        <select id="supabasePlan" class="select" onchange="handleSupabasePlanChange()">
+                        <h3 class="card-title mb-4">Banco de Dados (Supabase)</h3>
+                        <select id="supabasePlan" class="select">
                             <option value="Gratuito">Gratuito</option><option value="Profissional">Profissional</option>
                         </select>
-                        <div id="supabaseProUsage" class="hidden mt-4 space-y-2">
-                             <hr class="border-border"><p class="text-sm font-semibold pt-2">Uso Adicional (Plano Pro)</p>
-                             <div><label for="supabaseMaus" class="label !text-xs">MAUs (acima de 100k)</label><input type="number" id="supabaseMaus" value="0" min="0" class="input" oninput="calculateCosts()"></div>
-                             <div><label for="supabaseDbGb" class="label !text-xs">DB Size (GB) (acima de 8GB)</label><input type="number" id="supabaseDbGb" value="0" min="0" class="input" oninput="calculateCosts()"></div>
-                        </div>
                     </div>
-                    <div class="card"><h3 class="card-title mb-4">Outros Custos Fixos</h3><p class="text-sm text-muted-foreground">Domínio e Email</p><p class="text-lg font-semibold mt-2">R$ 15,41 / mês</p></div>
+                     <div class="card">
+                        <h3 class="card-title mb-4">Módulo de Voz (ElevenLabs)</h3>
+                        <select id="audioPlan" class="select">
+                            <option value="Nenhum">Nenhum</option>
+                            <option value="Iniciante">Iniciante</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -126,34 +117,25 @@
         </form>
     </main>
 
-<script>
+    <script>
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
         const pricing = {
             usdRate: 5.40,
-            impl_hourly_rate_brl: 160, // 4 engenheiros @ R$40/h
+            impl_hourly_rate_brl: 160,
             projectTiers: {
                 "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280,   tokens_per_message: 900 },
                 "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920,   tokens_per_message: 1650 },
                 "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 3000 },
                 "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 5350 }
             },
-            chatgpt: { 
-                "GPT-3.5-Turbo": { cost_per_1k_messages_usd: 0.05 },
-                "GPT-4.1 Nano":  { cost_per_1k_messages_usd: 0.08 },
-                "GPT-4o Mini":   { cost_per_1k_messages_usd: 0.15 },
-                "GPT-4.1 Mini":  { cost_per_1k_messages_usd: 0.25 },
-                "GPT-4o":        { cost_per_1k_messages_usd: 2.50 },
-                "GPT-4.1 Turbo": { cost_per_1k_messages_usd: 3.00 }
-            },
-            server: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
+            hostingerVps: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
             database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 } },
-            audio: {
-                "Nenhum": { monthly_cost_usd: 0 },
-                "Iniciante": { monthly_cost_usd: 5 },
-                "Criador": { monthly_cost_usd: 22 },
-                "Profissional": { monthly_cost_usd: 99 }
+            audio: { "Nenhum": { monthly_cost_usd: 0 }, "Iniciante": { monthly_cost_usd: 5 } },
+            chatgpt: { 
+                "GPT-3.5-Turbo": { cost_per_1k_messages_usd: 0.05 }, "GPT-4.1 Nano":  { cost_per_1k_messages_usd: 0.08 },
+                "GPT-4o Mini":   { cost_per_1k_messages_usd: 0.15 }, "GPT-4.1 Mini":  { cost_per_1k_messages_usd: 0.25 },
+                "GPT-4o":        { cost_per_1k_messages_usd: 2.50 }, "GPT-4.1 Turbo": { cost_per_1k_messages_usd: 3.00 }
             },
-            ai: { cost_per_million_tokens_usd: 0.40 },
             other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
         };
         
@@ -161,27 +143,27 @@
         function getNum(id) { return parseFloat(getVal(id)) || 0; }
 
         function calculateCosts() {
-            // 1. Calcular Custo Mensal da Infraestrutura
             const rate = pricing.usdRate;
             let monthlyInfraBRL = pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
             let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd + pricing.audio[getVal('audioPlan')].monthly_cost_usd;
+            
             const projectTierKey = getVal('projectTier');
-            const conversations = getNum('monthlyMessages') / 30; 
-            const tokensPerMessage = pricing.projectTiers[projectTierKey] ? pricing.projectTiers[projectTierKey].tokens_per_message : pricing.projectTiers['Básico'].tokens_per_message;
-            const monthlyMillionTokens = (conversations * tokensPerMessage * 30) / 1000000;
-            monthlyInfraUSD += monthlyMillionTokens * pricing.ai.cost_per_million_tokens_usd;
+            const chatGptModelKey = getVal('chatgptModel');
+            
+            const costPer1kMessages = pricing.chatgpt[chatGptModelKey].cost_per_1k_messages_usd;
+            const monthlyMessages = getNum('monthlyMessages');
+            monthlyInfraUSD += (monthlyMessages / 1000) * costPer1kMessages;
+            
             const totalMonthlyInfraCost = monthlyInfraBRL + (monthlyInfraUSD * rate);
 
-            // 2. Obter Custos de Mão de Obra
             const implHours = getNum('implementationHours');
             const implLaborCost = implHours * pricing.impl_hourly_rate_brl;
+            
             const supportMonthlyCost = pricing.projectTiers[projectTierKey] ? pricing.projectTiers[projectTierKey].support_monthly_cost : pricing.projectTiers['Básico'].support_monthly_cost;
 
-            // 3. Calcular Valores de Referência Finais
             const finalImplementationCost = implLaborCost + (totalMonthlyInfraCost * 12);
             const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 3);
 
-            // 4. Exibir na tela
             document.getElementById('implementationCost').textContent = `R$ ${finalImplementationCost.toFixed(2)}`;
             document.getElementById('monthlyRevenue').textContent = `R$ ${finalMonthlyCost.toFixed(2)}`;
         }
@@ -218,11 +200,15 @@
             if (!validateEmail(clientEmail)) { feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`; return; }
             
             const budgetData = {
-                source: "calculadora_vendedores_v6_final", clientInfo: { name: clientName, email: clientEmail },
+                source: "calculadora_vendedores_final_corrigida",
+                clientInfo: { name: clientName, email: clientEmail },
                 projectTier: getVal('projectTier'),
                 implementationHours: getNum('implementationHours'),
                 costDetails: {
-                    audioPlan: getVal('audioPlan'), serverPlan: getVal('serverPlan'), supabasePlan: getVal('supabasePlan'),
+                    audioPlan: getVal('audioPlan'),
+                    serverPlan: getVal('hostingerVpsPlan'),
+                    supabasePlan: getVal('supabasePlan'),
+                    chatgptModel: getVal('chatgptModel'),
                     monthlyMessages: getNum('monthlyMessages'),
                 },
                 costBasis: { implementation_base_cost_brl: document.getElementById('implementationCost').textContent, suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent, },
@@ -234,20 +220,23 @@
                 const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(budgetData) });
                 if (!response.ok) throw new Error(`Erro ${response.status}`);
                 feedbackEl.innerHTML = `<p style="color: hsl(142.1 76.2% 46.5%);">Proposta registrada com sucesso!</p>`;
-                document.getElementById('vendedor-form').reset(); updateHoursFromTier();
+                document.getElementById('vendedor-form').reset();
+                updateHoursFromTier();
             } catch (error) { console.error("Erro:", error); feedbackEl.innerHTML = `<p class="error-message">Falha no registro.</p>`; }
         }
         
+        // Centralizando os event listeners
+        document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
+        document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
         document.querySelectorAll('input, select').forEach(el => {
             if (el.id !== 'projectTier' && el.id !== 'implementationHours') {
                 el.addEventListener('input', calculateCosts);
             }
         });
         document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
+        
         function initializePage() {
-            // Primeiro, sincroniza as horas com o tier padrão
-            updateHoursFromTier(); 
-            calculateCosts();
+            updateHoursFromTier();
         }
         window.onload = initializePage;
     </script>
