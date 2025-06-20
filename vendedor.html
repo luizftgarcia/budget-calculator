@@ -244,7 +244,12 @@
             }
         });
         document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
-        window.onload = updateHoursFromTier;
+        function initializePage() {
+            // Primeiro, sincroniza as horas com o tier padrão
+            updateHoursFromTier(); 
+            calculateCosts();
+        }
+        window.onload = initializePage;
     </script>
 </body>
 </html>
