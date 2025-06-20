@@ -157,35 +157,35 @@
         // Substitua todo o seu objeto 'pricing' por este bloco corrigido
         const pricing = {
             usdRate: 5.40,
-            impl_hourly_rate_brl: 160, // 4 engenheiros @ R$40/h
+            impl_hourly_rate_brl: 160,
             projectTiers: {
-                "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280,   tokens_per_message: 900 },
+                "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280,   tokens_per_message: 1200 },
                 "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920,   tokens_per_message: 1650 },
-                "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 3000 },
-                "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 5350 }
+                "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 2250 },
+                "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 3000 }
             },
             chatgpt: { 
-                "GPT-3.5-Turbo": { cost_per_1k_messages_usd: 0.05 },
-                "GPT-4.1 Nano":  { cost_per_1k_messages_usd: 0.08 },
-                "GPT-4o Mini":   { cost_per_1k_messages_usd: 0.15 },
-                "GPT-4.1 Mini":  { cost_per_1k_messages_usd: 0.25 },
-                "GPT-4o":        { cost_per_1k_messages_usd: 2.50 },
-                "GPT-4.1 Turbo": { cost_per_1k_messages_usd: 3.00 }
+                "GPT-3.5-Turbo": { cost_per_million_tokens_usd: 1.00 },
+                "GPT-4.1 Nano":  { cost_per_million_tokens_usd: 0.21 },  // Média de in/out
+                "GPT-4o Mini":   { cost_per_million_tokens_usd: 0.375 }, // Média de in/out
+                "GPT-4.1 Mini":  { cost_per_million_tokens_usd: 1.00 },  // Média de in/out
+                "GPT-4o":        { cost_per_million_tokens_usd: 10.00 }, // Média de in/out
+                "GPT-4.1 Turbo": { cost_per_million_tokens_usd: 5.00 }   // Média de in/out
             },
             messageSizes: {
                 "Curta": { tokens: 200 },
-                "Média": { tokens: 700 },
-                "Longa": { tokens: 2000 }
+                "Média": { tokens: 500 },
+                "Longa": { tokens: 1000 }
             },
             hostingerVps: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
-            database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25, overage_mau_usd: 0.00325, overage_db_gb_usd: 0.125 } },
+            database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 } },
             audio: {
-                "Nenhum":       { monthly_cost_usd: 0 },
-                "Iniciante":    { monthly_cost_usd: 5 },
-                "Criador":      { monthly_cost_usd: 22 },
-                "Profissional": { monthly_cost_usd: 99 },
-                "Empresarial":  { monthly_cost_usd: 330 },
-                "Corporativo":  { monthly_cost_usd: 1320 } // Custo base de exemplo, pode ser ajustado
+                "Nenhum":       { plan_cost_usd: 0, included_minutes: 0, overage_cost_per_minute_usd: 0 },
+                "Iniciante":    { plan_cost_usd: 5, included_minutes: 30, overage_cost_per_minute_usd: 0.30 },
+                "Criador":      { plan_cost_usd: 22, included_minutes: 100, overage_cost_per_minute_usd: 0.30 },
+                "Profissional": { plan_cost_usd: 99, included_minutes: 500, overage_cost_per_minute_usd: 0.24 },
+                "Empresarial":  { plan_cost_usd: 330, included_minutes: 2000, overage_cost_per_minute_usd: 0.18 },
+                "Corporativo":  { plan_cost_usd: 1320, included_minutes: 22000, overage_cost_per_minute_usd: 0.12 }
             },
             other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
         };
@@ -193,40 +193,32 @@
         function getVal(id) { return document.getElementById(id).value; }
         function getNum(id) { return parseFloat(getVal(id)) || 0; }
 
+        // Substitua sua função calculateCosts() inteira por esta:
         function calculateCosts() {
-            // --- 1. Custo Base da Infraestrutura ---
             const rate = pricing.usdRate;
-            // Custos em Reais (Servidor, Domínio, Email)
             let monthlyInfraBRL = pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
-            // Custos em Dólar (Banco de Dados)
             let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd;
-        
-            // --- 2. NOVA LÓGICA DE CÁLCULO DE IA (BASEADO EM USO) ---
+            
+            // Lógica de cálculo de IA baseada em uso
             const monthlyClients = getNum('iaMonthlyClients');
             const messagesPerConvo = getNum('iaMessagesPerConvo');
             const totalMonthlyMessages = monthlyClients * messagesPerConvo;
-            
             const messageSizeKey = getVal('iaMessageSize');
             const tokensPerMessage = pricing.messageSizes[messageSizeKey].tokens;
             const totalMonthlyTokens = totalMonthlyMessages * tokensPerMessage;
-            
             const chatModelKey = getVal('chatgptModel');
             const costPerMillionTokens = pricing.chatgpt[chatModelKey] ? pricing.chatgpt[chatModelKey].cost_per_million_tokens_usd : 0;
-            
             monthlyInfraUSD += (totalMonthlyTokens / 1000000) * costPerMillionTokens;
             
-            // --- 3. NOVA LÓGICA DE CÁLCULO DE VOZ (BASEADO EM USO) ---
+            // Lógica de cálculo de Voz baseada em uso
             const audioPlanKey = getVal('audioPlan');
             const audioPlan = pricing.audio[audioPlanKey];
             const audioMonthlyConvos = getNum('audioMonthlyConvos');
             const audioMinutesPerConvo = getNum('audioMinutesPerConvo');
             const totalMonthlyMinutes = audioMonthlyConvos * audioMinutesPerConvo;
-            
             let audioCostUSD = 0;
-            // Apenas calcula se um plano de áudio foi selecionado
-            if (audioPlan && audioPlan.plan_cost_usd !== undefined && totalMonthlyMinutes > 0) {
+            if (audioPlan && totalMonthlyMinutes > 0) {
                 audioCostUSD = audioPlan.plan_cost_usd;
-                // Calcula o custo excedente (overage) se o uso for maior que o incluído no plano
                 if (totalMonthlyMinutes > audioPlan.included_minutes) {
                     const overageMinutes = totalMonthlyMinutes - audioPlan.included_minutes;
                     audioCostUSD += overageMinutes * audioPlan.overage_cost_per_minute_usd;
@@ -234,21 +226,17 @@
             }
             monthlyInfraUSD += audioCostUSD;
         
-            // --- 4. Custo Total Mensal da Infraestrutura ---
             const totalMonthlyInfraCost = monthlyInfraBRL + (monthlyInfraUSD * rate);
         
-            // --- 5. Custos de Mão de Obra ---
             const projectTierKey = getVal('projectTier');
             const implHours = getNum('implementationHours');
             const implLaborCost = implHours * pricing.impl_hourly_rate_brl;
             const supportMonthlyCost = pricing.projectTiers[projectTierKey] ? pricing.projectTiers[projectTierKey].support_monthly_cost : pricing.projectTiers['Básico'].support_monthly_cost;
         
-            // --- 6. Valores Finais de Referência ---
             const finalImplementationCost = implLaborCost + (totalMonthlyInfraCost * 12);
-            // CORREÇÃO FINAL: Multiplicador alterado para 3, conforme definido anteriormente
+            // CORREÇÃO do multiplicador para 3
             const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 2);
         
-            // --- 7. Exibição na Tela ---
             document.getElementById('implementationCost').textContent = `R$ ${finalImplementationCost.toFixed(2)}`;
             document.getElementById('monthlyRevenue').textContent = `R$ ${finalMonthlyCost.toFixed(2)}`;
         }
@@ -309,26 +297,21 @@
                 updateHoursFromTier();
             } catch (error) { console.error("Erro:", error); feedbackEl.innerHTML = `<p class="error-message">Falha no registro.</p>`; }
         }
-        
-        // Centralizando os event listeners
-        document.querySelectorAll('#vendedor-form select, #vendedor-form input').forEach(el => {
-            el.addEventListener('input', calculateCosts);
-            el.addEventListener('change', calculateCosts); // 'change' é bom para selects
-        });
-        
-        // Adiciona os gatilhos específicos para a sincronização de Nível e Horas
         document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
         document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
         
-        // Gatilho para o botão de envio
+        document.querySelectorAll('#vendedor-form select, #vendedor-form input').forEach(el => {
+            if (el.id !== 'projectTier' && el.id !== 'implementationHours') {
+                el.addEventListener('input', calculateCosts);
+                el.addEventListener('change', calculateCosts);
+            }
+        });
+        
         document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
         
         // --- Inicialização da Página ---
         function initializePage() {
-            // Define as horas iniciais com base no tier padrão
             updateHoursFromTier();
-            // Nota: O calculateCosts() já é chamado dentro de updateHoursFromTier(),
-            // então a página carregará com os valores já calculados.
         }
         window.onload = initializePage;
     </script>
