@@ -41,46 +41,49 @@
             <div class="space-y-6">
                 <div class="card"><h3 class="card-title mb-4">1. Dados do Cliente Final</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="clientName" class="label">Nome do Cliente</label><input type="text" id="clientName" class="input" placeholder="Nome completo"></div><div><label for="clientEmail" class="label">Email</label><input type="email" id="clientEmail" class="input" placeholder="cliente@email.com"></div><div class="md:col-span-2"><label for="clientPhone" class="label">Telefone (Opcional)</label><input type="tel" id="clientPhone" class="input" placeholder="(XX) 9XXXX-XXXX"></div></div></div>
                 <div class="card"><h3 class="card-title mb-4">2. Configuração do Projeto</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="projectTier" class="label">Nível do Projeto</label>
-                            <select id="projectTier" class="select" onchange="updateHoursFromTier()">
-                                <option value="Básico">Básico</option>
-                                <option value="Médio">Médio</option>
-                                <option value="Avançado">Avançado</option>
-                                <option value="Enterprise">Enterprise</option>
-                                <option value="Personalizado" disabled>Personalizado</option>
-                            </select>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="projectTier" class="label">Nível do Projeto</label>
+                                <select id="projectTier" class="select" onchange="updateHoursFromTier()">
+                                    <option value="Básico">Básico</option>
+                                    <option value="Médio">Médio</option>
+                                    <option value="Avançado">Avançado</option>
+                                    <option value="Enterprise">Enterprise</option>
+                                    <option value="Personalizado" disabled>Personalizado</option>
+                                </select>
+                            </div>
+                            <div>
+                               <label for="implementationHours" class="label">Horas de Setup</label>
+                               <input type="number" id="implementationHours" class="input" oninput="updateTierFromHours()">
+                            </div>
                         </div>
-                        <div>
-                           <label for="implementationHours" class="label">Horas de Setup</label>
-                           <input type="number" id="implementationHours" class="input" oninput="updateTierFromHours()">
-                        </div>
-                        <div class="md:col-span-2"><hr class="border-border"></div>
-                        <div>
-                            <label for="conversationsPerDay" class="label">Conversas por Dia (Estimado)</label>
-                            <input type="number" id="conversationsPerDay" class="input" value="30" oninput="calculateCosts()">
-                        </div>
-                        <div>
-                            <label for="serverPlan" class="label">Configuração do Servidor</label>
-                            <select id="serverPlan" class="select" onchange="calculateCosts()"><option value="Basic">Básico</option><option value="Standard">Padrão</option><option value="Advanced">Avançado</option></select>
-                        </div>
-                        <div>
-                            <label for="dbPlan" class="label">Banco de Dados</label>
-                            <select id="dbPlan" class="select" onchange="calculateCosts()"><option value="Básico">Básico</option><option value="Profissional">Profissional</option></select>
-                        </div>
-                        <div>
-                            <label for="audioPlan" class="label">Módulo de Voz (Áudio)</label>
-                            <select id="audioPlan" class="select" onchange="calculateCosts()"><option value="Nenhum">Nenhum</option><option value="Iniciante">Iniciante</option><option value="Criador">Criador</option><option value="Profissional">Profissional</option></select>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
+                            <div>
+                                <label for="conversationsPerDay" class="label">Conversas por Dia (Estimado)</label>
+                                <input type="number" id="conversationsPerDay" class="input" value="30" oninput="calculateCosts()">
+                            </div>
+                            <div>
+                                <label for="serverPlan" class="label">Configuração do Servidor</label>
+                                <select id="serverPlan" class="select" onchange="calculateCosts()"><option value="Basic">Básico</option><option value="Standard">Padrão</option><option value="Advanced">Avançado</option></select>
+                            </div>
+                            <div>
+                                <label for="dbPlan" class="label">Banco de Dados</label>
+                                <select id="dbPlan" class="select" onchange="calculateCosts()"><option value="Básico">Básico</option><option value="Profissional">Profissional</option></select>
+                            </div>
+                            <div>
+                                <label for="audioPlan" class="label">Módulo de Voz (Áudio)</label>
+                                <select id="audioPlan" class="select" onchange="calculateCosts()"><option value="Nenhum">Nenhum</option><option value="Iniciante">Iniciante</option><option value="Criador">Criador</option><option value="Profissional">Profissional</option></select>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="card">
                     <h3 class="card-title mb-4">3. Requisitos e Links de Referência</h3>
                     <label for="clientRequirements" class="label">Descrição do Projeto</label>
-                    <textarea id="clientRequirements" class="textarea" placeholder="Descreva aqui os detalhes da necessidade do cliente, como o processo de conversão, integrações desejadas, etc."></textarea>
+                    <textarea id="clientRequirements" class="textarea" placeholder="Descreva aqui os detalhes da necessidade do cliente..."></textarea>
                     <div id="linksContainer" class="space-y-2 mt-4"></div>
-                    <button type="button" id="addLinkButton" class="btn mt-2">+ Adicionar Link de Referência</button>
+                    <button type="button" id="addLinkButton" class="btn mt-2">+ Adicionar Link</button>
                 </div>
                 <div class="card">
                     <h3 class="card-title mb-4">4. Valores Finais da Proposta</h3>
@@ -88,7 +91,7 @@
                         <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Implantação)</p><p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
                         <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Mensal)</p><p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="finalImplementationValue" class="label">Valor de Implantação Acertado (R$)</label><input type="number" id="finalImplementationValue" class="input" placeholder="Ex: 12000.00"></div><div><label for="finalMonthlyValue" class="label">Valor Mensal Acertado (R$)</label><input type="number" id="finalMonthlyValue" class="input" placeholder="Ex: 699.00"></div></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="finalImplementationValue" class="label">Valor de Implantação Acertado (R$)</label><input type="number" id="finalImplementationValue" class="input"></div><div><label for="finalMonthlyValue" class="label">Valor Mensal Acertado (R$)</label><input type="number" id="finalMonthlyValue" class="input"></div></div>
                 </div>
                 <div class="card"><button type="button" id="sendBudgetButton" class="btn-primary">Enviar Orçamento para Análise</button><div id="feedbackMessage" class="mt-4 text-center h-4"></div></div>
             </div>
@@ -99,12 +102,12 @@
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
         const pricing = {
             usdRate: 5.40,
-            impl_hourly_rate_brl: 160, 
+            impl_hourly_rate_brl: 160,
             projectTiers: {
-                "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280, tokens_per_message: 900 },
-                "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920, tokens_per_message: 1650 },
-                "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560, tokens_per_message: 3000 },
-                "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200, tokens_per_message: 5350 }
+                "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280,   tokens_per_message: 900 },
+                "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920,   tokens_per_message: 1650 },
+                "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 3000 },
+                "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 5350 }
             },
             server: { "Basic": { monthly_cost_brl: 89.99 }, "Standard": { monthly_cost_brl: 159.99 }, "Advanced": { monthly_cost_brl: 329.99 }, },
             database: { "Básico": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 }, },
@@ -187,7 +190,7 @@
             const referenceLinks = Array.from(document.querySelectorAll('.link-input')).map(input => input.value).filter(value => value);
             
             const budgetData = {
-                source: "portal_parceiros_v6_flex",
+                source: "portal_parceiros_v6_final",
                 clientInfo: { name: clientName, email: clientEmail, phone: clientPhone },
                 projectScope: {
                     projectTier: getVal('projectTier'),
