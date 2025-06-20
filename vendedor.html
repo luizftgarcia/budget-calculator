@@ -93,9 +93,13 @@
                     </div>
                      <div class="card">
                         <h3 class="card-title mb-4">Módulo de Voz (ElevenLabs)</h3>
-                        <select id="audioPlan" class="select">
+                        <select id="audioPlan" class="select" onchange="calculateCosts()">
                             <option value="Nenhum">Nenhum</option>
-                            <option value="Iniciante">Iniciante</option>
+                            <option value="Iniciante">Iniciante (30 min/mês, $5)</option>
+                            <option value="Criador">Criador (100 min/mês, $22)</option>
+                            <option value="Profissional">Profissional (500 min/mês, $99, Clonagem de Voz)</option>
+                            <option value="Empresarial">Empresarial (2000 min/mês, $330)</option>
+                            <option value="Corporativo">Corporativo (Preço Personalizado)</option>
                         </select>
                     </div>
                 </div>
@@ -141,11 +145,12 @@
             hostingerVps: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
             database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25, overage_mau_usd: 0.00325, overage_db_gb_usd: 0.125 } },
             audio: {
-                "Nenhum": { monthly_cost_usd: 0 },
-                "Iniciante": { monthly_cost_usd: 5 },
-                "Criador": { monthly_cost_usd: 22 },
+                "Nenhum":       { monthly_cost_usd: 0 },
+                "Iniciante":    { monthly_cost_usd: 5 },
+                "Criador":      { monthly_cost_usd: 22 },
                 "Profissional": { monthly_cost_usd: 99 },
-                "Empresarial": { monthly_cost_usd: 330 }
+                "Empresarial":  { monthly_cost_usd: 330 },
+                "Corporativo":  { monthly_cost_usd: 1320 } // Custo base de exemplo, pode ser ajustado
             },
             other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
         };
