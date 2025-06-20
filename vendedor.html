@@ -70,15 +70,26 @@
                     </div>
                 </div>
                 <div class="space-y-6">
-                     <div class="card">
+                    <div class="card">
                         <h3 class="card-title mb-4">Módulo de IA (OpenAI)</h3>
-                        <select id="chatgptModel" class="select" onchange="calculateCosts()">
-                            <option value="GPT-3.5-Turbo">GPT-3.5-Turbo (Baixo Custo)</option>
-                            <option value="GPT-4o Mini">GPT-4o Mini (Equilibrado)</option>
-                            <option value="GPT-4o">GPT-4o (Alta Qualidade)</option>
-                            <option value="GPT-4.1 Turbo">GPT-4.1 Turbo (Performance Máxima)</option>
-                        </select>
+                        <div class="space-y-4">
+                            <div>
+                            <label for="chatgptModel" class="label">Modelo de IA</label>
+                            <select id="chatgptModel" class="select" onchange="calculateCosts()">
+                                <option value="GPT-3.5-Turbo">GPT-3.5-Turbo (Mais Econômico)</option>
+                                <option value="GPT-4.1 Nano">GPT-4.1 Nano (Ultra Econômico)</option>
+                                <option value="GPT-4o Mini">GPT-4o Mini (Equilibrado)</option>
+                                <option value="GPT-4.1 Mini">GPT-4.1 Mini (Performance Econômica)</option>
+                                <option value="GPT-4o">GPT-4o (Inteligência Máxima)</option>
+                                <option value="GPT-4.1 Turbo">GPT-4.1 Turbo (Performance Máxima)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="monthlyMessages" class="label">Total de Mensagens/Mês</label>
+                            <input type="number" id="monthlyMessages" class="input" value="10000" oninput="calculateCosts()">
+                        </div>
                     </div>
+                </div>
                     <div class="card">
                         <div class="flex justify-between items-center mb-4">
                              <h3 class="card-title">Banco de Dados (Supabase)</h3>
@@ -124,6 +135,14 @@
                 "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920,   tokens_per_message: 1650 },
                 "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 3000 },
                 "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 5350 }
+            },
+            chatgpt: { 
+                "GPT-3.5-Turbo": { cost_per_1k_messages_usd: 0.05 },
+                "GPT-4.1 Nano":  { cost_per_1k_messages_usd: 0.08 },
+                "GPT-4o Mini":   { cost_per_1k_messages_usd: 0.15 },
+                "GPT-4.1 Mini":  { cost_per_1k_messages_usd: 0.25 },
+                "GPT-4o":        { cost_per_1k_messages_usd: 2.50 },
+                "GPT-4.1 Turbo": { cost_per_1k_messages_usd: 3.00 }
             },
             server: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
             database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 } },
