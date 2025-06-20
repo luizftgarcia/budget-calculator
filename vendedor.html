@@ -146,7 +146,12 @@
             },
             server: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
             database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 } },
-            audio: { "Nenhum": { monthly_cost_usd: 0 }, "Iniciante": { monthly_cost_usd: 5 } },
+            audio: {
+                "Nenhum": { monthly_cost_usd: 0 },
+                "Iniciante": { monthly_cost_usd: 5 },
+                "Criador": { monthly_cost_usd: 22 },
+                "Profissional": { monthly_cost_usd: 99 }
+            }
             ai: { cost_per_million_tokens_usd: 0.40 },
             other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
         };
@@ -157,7 +162,7 @@
         function calculateCosts() {
             // 1. Calcular Custo Mensal da Infraestrutura
             const rate = pricing.usdRate;
-            let monthlyInfraBRL = pricing.server[getVal('serverPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
+            let monthlyInfraBRL = pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
             let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd + pricing.audio[getVal('audioPlan')].monthly_cost_usd;
             const projectTierKey = getVal('projectTier');
             const conversations = getNum('monthlyMessages') / 30; 
