@@ -25,8 +25,8 @@
         .input, .select { height: 2.5rem; }
         .textarea { min-height: 80px; }
         .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 2px var(--ring); }
-        .btn-primary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 0.75rem 1rem; border-radius: calc(var(--radius) - 4px); font-weight: 600; font-size: 1rem; background-color: var(--primary); color: var(--primary-foreground); cursor: pointer; transition: background-color 0.2s; }
-        .btn-primary:hover { background-color: hsl(217.2 91.2% 59.8% / 0.9); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.25rem 0.5rem; border-radius: calc(var(--radius) - 2px); font-weight: 500; font-size: 0.75rem; transition: background-color 0.2s; cursor: pointer; border: 1px solid var(--border); }
+        .btn-primary { width: 100%; padding: 0.75rem 1rem; font-weight: 600; font-size: 1rem; background-color: var(--primary); color: var(--primary-foreground); border: none; }
         .error-message { font-size: 0.75rem; color: var(--destructive-foreground); background-color: var(--destructive); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; }
     </style>
 </head>
@@ -34,241 +34,113 @@
     <main class="w-full max-w-2xl space-y-6">
         <div class="text-center">
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tighter">Gerador de Orçamento para Parceiros</h1>
-            <p class="text-muted-foreground mt-2">Calcule os custos base e defina o valor final da proposta.</p>
+            <p class="text-muted-foreground mt-2">Configure o projeto e defina o valor final da proposta.</p>
         </div>
 
-        <div class="card">
-            <h3 class="card-title mb-4">1. Dados do Cliente Final</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="clientName" class="label">Nome do Cliente</label>
-                    <input type="text" id="clientName" class="input" placeholder="Nome completo">
+        <form id="parceiro-form">
+            <div class="space-y-6">
+                <div class="card"><h3 class="card-title mb-4">1. Dados do Cliente Final</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="clientName" class="label">Nome do Cliente</label><input type="text" id="clientName" class="input" placeholder="Nome completo"></div><div><label for="clientEmail" class="label">Email</label><input type="email" id="clientEmail" class="input" placeholder="cliente@email.com"></div><div class="md:col-span-2"><label for="clientPhone" class="label">Telefone (Opcional)</label><input type="tel" id="clientPhone" class="input" placeholder="(XX) 9XXXX-XXXX"></div></div></div>
+                <div class="card"><h3 class="card-title mb-4">2. Escopo e Infraestrutura</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="conversationsPerDay" class="label">Conversas por Dia (Estimado)</label><input type="number" id="conversationsPerDay" class="input" value="30"></div><div><label for="aiScope" class="label">Complexidade da IA</label><select id="aiScope" class="select"><option value="Básico">Básico</option><option value="Médio">Médio</option><option value="Avançado">Avançado</option><option value="Enterprise">Enterprise</option></select></div><div><label for="serverPlan" class="label">Configuração do Servidor</label><select id="serverPlan" class="select"><option value="Basic">Básico (2 vCPU, 4GB RAM)</option><option value="Standard">Padrão (4 vCPU, 8GB RAM)</option><option value="Advanced">Avançado (8 vCPU, 16GB RAM)</option></select></div><div><label for="dbPlan" class="label">Banco de Dados</label><select id="dbPlan" class="select"><option value="Básico">Básico</option><option value="Profissional">Profissional</option></select></div><div class="md:col-span-2"><label for="audioPlan" class="label">Módulo de Síntese de Voz (Áudio)</label><select id="audioPlan" class="select"><option value="Nenhum">Nenhum</option><option value="Iniciante">Iniciante</option><option value="Criador">Criador</option><option value="Profissional">Profissional</option><option value="Empresarial">Empresarial</option></select></div></div></div>
+                <div class="card">
+                    <h3 class="card-title mb-4">3. Requisitos e Links de Referência</h3>
+                    <label for="clientRequirements" class="label">Descrição do Projeto</label>
+                    <textarea id="clientRequirements" class="textarea" placeholder="Descreva aqui os detalhes da necessidade do cliente, como o processo de conversão, integrações desejadas, etc."></textarea>
+                    <div id="linksContainer" class="space-y-2 mt-4"></div>
+                    <button type="button" id="addLinkButton" class="btn mt-2">+ Adicionar Link de Referência</button>
                 </div>
-                <div>
-                    <label for="clientEmail" class="label">Email</label>
-                    <input type="email" id="clientEmail" class="input" placeholder="cliente@email.com">
+                <div class="card">
+                    <h3 class="card-title mb-4">4. Valores Finais da Proposta</h3>
+                    <div class="bg-muted p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Implantação)</p><p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
+                        <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Mensal)</p><p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="finalImplementationValue" class="label">Valor de Implantação Acertado (R$)</label><input type="number" id="finalImplementationValue" class="input" placeholder="Ex: 3500.00"></div><div><label for="finalMonthlyValue" class="label">Valor Mensal Acertado (R$)</label><input type="number" id="finalMonthlyValue" class="input" placeholder="Ex: 497.00"></div></div>
                 </div>
-                <div class="md:col-span-2">
-                    <label for="clientPhone" class="label">Telefone (Opcional)</label>
-                    <input type="tel" id="clientPhone" class="input" placeholder="(XX) 9XXXX-XXXX">
-                </div>
+                <div class="card"><button type="button" id="sendBudgetButton" class="btn-primary">Enviar Orçamento para Análise</button><div id="feedbackMessage" class="mt-4 text-center h-4"></div></div>
             </div>
-        </div>
-
-        <div class="card">
-            <h3 class="card-title mb-4">2. Escopo do Projeto</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div>
-                    <label for="conversationsPerDay" class="label">Conversas por Dia</label>
-                    <input type="number" id="conversationsPerDay" class="input" value="30" oninput="calculateCosts()">
-                </div>
-                <div>
-                    <label for="messagesPerConversation" class="label">Mensagens por Conversa</label>
-                    <input type="number" id="messagesPerConversation" class="input" value="15" oninput="calculateCosts()">
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3 class="card-title mb-4">3. Infraestrutura</h3>
-             <div class="space-y-4">
-                 <div>
-                    <label for="serverPlan" class="label">Configuração do Servidor</label>
-                    <select id="serverPlan" class="select" onchange="calculateCosts()">
-                        <option value="Basic">Básico (2 vCPU, 4GB RAM)</option>
-                        <option value="Standard">Padrão (4 vCPU, 8GB RAM)</option>
-                        <option value="Advanced">Avançado (8 vCPU, 16GB RAM)</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="dbPlan" class="label">Banco de Dados de Alta Performance</label>
-                    <select id="dbPlan" class="select" onchange="calculateCosts()">
-                        <option value="Free">Básico (Limites baixos)</option>
-                        <option value="Pro">Profissional (Escalável)</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="audioPlan" class="label">Módulo de Síntese de Voz (Áudio)</label>
-                    <select id="audioPlan" class="select" onchange="calculateCosts()">
-                        <option value="None">Nenhum</option>
-                        <option value="Starter">Starter (Até 30k caracteres)</option>
-                        <option value="Creator">Creator (Até 100k caracteres)</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3 class="card-title mb-4">4. Requisitos e Processo do Cliente</h3>
-            <textarea id="clientRequirements" class="textarea" placeholder="Descreva aqui os detalhes da necessidade do cliente, como o processo de conversão, integrações desejadas, etc."></textarea>
-        </div>
-
-        <div class="card bg-secondary/30">
-            <h3 class="card-title mb-4">5. Custos Base e Valores Finais</h3>
-            <div class="bg-muted p-4 rounded-lg space-y-4">
-                <div class="text-center">
-                    <p class="text-sm text-muted-foreground">Seu Custo de Implantação (Base Anual)</p>
-                    <p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-sm text-muted-foreground">Sugestão de Recorrência Mensal (Custo x2)</p>
-                    <p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p>
-                </div>
-            </div>
-            <hr class="border-border my-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="finalImplementationValue" class="label">Valor de Implantação Acertado</label>
-                    <input type="number" id="finalImplementationValue" class="input" placeholder="Ex: 3500.00">
-                </div>
-                <div>
-                    <label for="finalMonthlyValue" class="label">Valor Mensal Acertado</label>
-                    <input type="number" id="finalMonthlyValue" class="input" placeholder="Ex: 497.00">
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <button id="sendBudgetButton" class="btn-primary">Enviar Orçamento para Análise</button>
-            <div id="feedbackMessage" class="mt-4 text-center h-4"></div>
-        </div>
+        </form>
     </main>
 
     <script>
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
-
         const pricing = {
             usdRate: 5.40,
-            server: {
-                "Basic": { monthly_cost_brl: 89.99 },
-                "Standard": { monthly_cost_brl: 159.99 },
-                "Advanced": { monthly_cost_brl: 329.99 },
-            },
-            database: {
-                "Free": { monthly_cost_usd: 0 },
-                "Pro": { monthly_cost_usd: 25 },
-            },
-            audio: {
-                "None": { monthly_cost_usd: 0 },
-                "Starter": { monthly_cost_usd: 5 },
-                "Creator": { monthly_cost_usd: 22 },
-            },
-            ai: {
-                // Custo por milhão de tokens para GPT-4o-mini (Input+Output avg)
-                cost_per_million_tokens_usd: 0.40
-            },
-            other_costs_brl: {
-                // Custo mensalizado de domínio e email
-                domain_email: (40.99 / 12) + 11.99
-            }
+            server: { "Basic": { monthly_cost_brl: 89.99 }, "Standard": { monthly_cost_brl: 159.99 }, "Advanced": { monthly_cost_brl: 329.99 }, },
+            database: { "Básico": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 }, },
+            audio: { "Nenhum": { monthly_cost_usd: 0 }, "Iniciante": { monthly_cost_usd: 5 }, "Criador": { monthly_cost_usd: 22 }, "Profissional": { monthly_cost_usd: 99 }, "Empresarial": { monthly_cost_usd: 330 }, },
+            ai: { cost_per_million_tokens_usd: 0.40 },
+            aiScope: { "Básico": { tokens_per_message: 900 }, "Médio": { tokens_per_message: 1650 }, "Avançado": { tokens_per_message: 3000 }, "Enterprise": { tokens_per_message: 5350 }, },
+            other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
         };
 
         function getVal(id) { return document.getElementById(id).value; }
         function getNum(id) { return parseFloat(getVal(id)) || 0; }
         
         function calculateCosts() {
-            const rate = pricing.usdRate;
-
-            // Custos de Infraestrutura
-            let monthlyCostBRL = 0;
+            const rate = pricing.usdRate; let monthlyCostBRL = 0;
             monthlyCostBRL += pricing.server[getVal('serverPlan')].monthly_cost_brl;
             monthlyCostBRL += pricing.other_costs_brl.domain_email;
-
             let monthlyCostUSD = 0;
             monthlyCostUSD += pricing.database[getVal('dbPlan')].monthly_cost_usd;
             monthlyCostUSD += pricing.audio[getVal('audioPlan')].monthly_cost_usd;
-            
-            // Custo de IA
             const conversations = getNum('conversationsPerDay');
-            const messages = getNum('messagesPerConversation');
-            // Estimativa: 250 tokens por mensagem (ida e volta)
-            const dailyTokens = conversations * messages * 250;
-            const monthlyMillionTokens = (dailyTokens * 30) / 1000000;
+            const scopeKey = getVal('aiScope');
+            const tokensPerMessage = pricing.aiScope[scopeKey].tokens_per_message;
+            const monthlyMillionTokens = (conversations * tokensPerMessage * 30) / 1000000;
             monthlyCostUSD += monthlyMillionTokens * pricing.ai.cost_per_million_tokens_usd;
-
             const totalMonthlyCost = monthlyCostBRL + (monthlyCostUSD * rate);
-            const totalAnnualCost = totalMonthlyCost * 12;
-            const suggestedMonthly = totalMonthlyCost * 2;
-
-            document.getElementById('implementationCost').textContent = `R$ ${totalAnnualCost.toFixed(2)}`;
-            document.getElementById('monthlyRevenue').textContent = `R$ ${suggestedMonthly.toFixed(2)}`;
-        }
-
-        function validateEmail(email) {
-            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(String(email).toLowerCase());
-        }
-
-        function validatePhone(phone) {
-            if (!phone) return true; // Opcional
-            const re = /^\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4}$/;
-            return re.test(phone);
-        }
-
-        async function sendBudget() {
-            const feedbackEl = document.getElementById('feedbackMessage');
-            feedbackEl.innerHTML = '';
-
-            // Validação
-            const clientName = getVal('clientName');
-            const clientEmail = getVal('clientEmail');
-            const clientPhone = getVal('clientPhone');
-            const finalImplementation = getNum('finalImplementationValue');
-            const finalMonthly = getNum('finalMonthlyValue');
-
-            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) {
-                feedbackEl.innerHTML = `<p class="error-message">Preencha todos os dados do cliente e os valores finais acertados.</p>`;
-                return;
-            }
-            if (!validateEmail(clientEmail)) {
-                feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`;
-                return;
-            }
-            if (!validatePhone(clientPhone)) {
-                feedbackEl.innerHTML = `<p class="error-message">Formato de telefone inválido.</p>`;
-                return;
-            }
-
-            const budgetData = {
-                source: "portal_parceiros_calculadora",
-                clientInfo: { name: clientName, email: clientEmail, phone: clientPhone },
-                projectScope: {
-                    conversationsPerDay: getNum('conversationsPerDay'),
-                    messagesPerConversation: getNum('messagesPerConversation'),
-                    clientRequirements: getVal('clientRequirements'),
-                },
-                infrastructure: {
-                    server: getVal('serverPlan'),
-                    database: getVal('dbPlan'),
-                    audio: getVal('audioPlan'),
-                },
-                costBasis: {
-                    implementation_base_cost_brl: document.getElementById('implementationCost').textContent,
-                    suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent,
-                },
-                finalDeal: {
-                    implementation_value_brl: finalImplementation,
-                    monthly_revenue_brl: finalMonthly,
-                }
-            };
-            
-            feedbackEl.textContent = "Enviando...";
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(budgetData)
-                });
-                if (!response.ok) throw new Error(`Erro ${response.status}`);
-                feedbackEl.innerHTML = `<p class="text-green-400">Orçamento enviado com sucesso!</p>`;
-                document.getElementById('sendBudgetButton').form.reset();
-                calculateCosts();
-            } catch (error) {
-                console.error("Erro ao enviar webhook:", error);
-                feedbackEl.innerHTML = `<p class="error-message">Falha no envio. Tente novamente.</p>`;
-            }
+            document.getElementById('implementationCost').textContent = `R$ ${(totalMonthlyCost * 12).toFixed(2)}`;
+            document.getElementById('monthlyRevenue').textContent = `R$ ${(totalMonthlyCost * 2).toFixed(2)}`;
         }
         
+        function addLinkField() {
+            const container = document.getElementById('linksContainer');
+            const linkFieldId = `link-${Date.now()}`;
+            const newField = document.createElement('div');
+            newField.className = 'flex items-center gap-2';
+            newField.innerHTML = `
+                <input type="url" class="input link-input" placeholder="https://...">
+                <button type="button" class="btn !text-red-400 !border-red-400" onclick="document.getElementById('${linkFieldId}').parentElement.remove()">X</button>
+            `;
+            newField.firstElementChild.id = linkFieldId;
+            container.appendChild(newField);
+        }
+
+        function validateEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
+        function validatePhone(phone) { if (!phone) return true; const re = /^\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4}$/; return re.test(phone); }
+
+        async function sendBudget() {
+            const feedbackEl = document.getElementById('feedbackMessage'); feedbackEl.innerHTML = '';
+            const clientName = getVal('clientName'); const clientEmail = getVal('clientEmail'); const clientPhone = getVal('clientPhone');
+            const finalImplementation = getNum('finalImplementationValue'); const finalMonthly = getNum('finalMonthlyValue');
+            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) { feedbackEl.innerHTML = `<p class="error-message">Preencha todos os dados do cliente e os valores finais acertados.</p>`; return; }
+            if (!validateEmail(clientEmail)) { feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`; return; }
+            if (!validatePhone(clientPhone)) { feedbackEl.innerHTML = `<p class="error-message">Formato de telefone inválido.</p>`; return; }
+            
+            const referenceLinks = Array.from(document.querySelectorAll('.link-input')).map(input => input.value).filter(value => value);
+            const budgetData = {
+                source: "portal_parceiros_v3",
+                clientInfo: { name: clientName, email: clientEmail, phone: clientPhone },
+                projectScope: {
+                    conversationsPerDay: getNum('conversationsPerDay'), aiComplexity: getVal('aiScope'),
+                    clientRequirements: getVal('clientRequirements'), referenceLinks: referenceLinks
+                },
+                infrastructure: { server: getVal('serverPlan'), database: getVal('dbPlan'), audio: getVal('audioPlan'), },
+                costBasis: { implementation_base_cost_brl: document.getElementById('implementationCost').textContent, suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent },
+                finalDeal: { implementation_value_brl: finalImplementation, monthly_revenue_brl: finalMonthly, }
+            };
+            feedbackEl.textContent = "Enviando...";
+            try {
+                const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(budgetData) });
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                feedbackEl.innerHTML = `<p style="color: hsl(142.1 76.2% 46.5%);">Orçamento enviado com sucesso!</p>`;
+                document.getElementById('parceiro-form').reset(); calculateCosts();
+                document.getElementById('linksContainer').innerHTML = '';
+            } catch (error) { console.error("Erro:", error); feedbackEl.innerHTML = `<p class="error-message">Falha no envio.</p>`; }
+        }
+        
+        document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calculateCosts));
+        document.getElementById('addLinkButton').addEventListener('click', addLinkField);
         document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
         window.onload = calculateCosts;
     </script>
