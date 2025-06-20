@@ -7,521 +7,228 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Estilos inspirados em Shadcn/UI */
         :root {
-            --background: hsl(222.2 84% 4.9%);
-            --foreground: hsl(210 40% 98%);
-            --card: hsl(222.2 84% 4.9%);
-            --card-foreground: hsl(210 40% 98%);
-            --popover: hsl(222.2 84% 4.9%);
-            --popover-foreground: hsl(210 40% 98%);
-            --primary: hsl(217.2 91.2% 59.8%);
-            --primary-foreground: hsl(210 40% 98%);
-            --secondary: hsl(217.2 32.6% 17.5%);
-            --secondary-foreground: hsl(210 40% 98%);
-            --muted: hsl(217.2 32.6% 17.5%);
-            --muted-foreground: hsl(215 20.2% 65.1%);
-            --border: hsl(217.2 32.6% 17.5%);
-            --input: hsl(217.2 32.6% 17.5%);
-            --ring: hsl(217.2 91.2% 59.8%);
-            --radius: 0.5rem;
+            --background: hsl(222.2 84% 4.9%); --foreground: hsl(210 40% 98%);
+            --card: hsl(222.2 84% 4.9%); --card-foreground: hsl(210 40% 98%);
+            --primary: hsl(217.2 91.2% 59.8%); --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(217.2 32.6% 17.5%); --secondary-foreground: hsl(210 40% 98%);
+            --muted: hsl(217.2 32.6% 17.5%); --muted-foreground: hsl(215 20.2% 65.1%);
+            --border: hsl(217.2 32.6% 17.5%); --input: hsl(217.2 32.6% 17.5%);
+            --ring: hsl(217.2 91.2% 59.8%); --radius: 0.5rem;
+            --destructive: hsl(0 62.8% 30.6%); --destructive-foreground: hsl(0 85.7% 97.3%);
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background);
-            color: var(--foreground);
-        }
-        
-        .card {
-            background-color: var(--card);
-            color: var(--card-foreground);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-header {
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 1rem;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-        }
-        
-        .label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--muted-foreground);
-            margin-bottom: 0.5rem;
-        }
-
-        .input, .select {
-            display: flex;
-            width: 100%;
-            height: 2.5rem;
-            padding: 0.5rem 0.75rem;
-            background-color: var(--input);
-            border: 1px solid var(--border);
-            border-radius: calc(var(--radius) - 2px);
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
-
-        .input:focus, .select:focus {
-            outline: none;
-            border-color: var(--ring);
-            box-shadow: 0 0 0 2px var(--ring);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5rem 1rem;
-            border-radius: calc(var(--radius) - 2px);
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: var(--primary-foreground);
-        }
-
-        .btn-primary:hover {
-            background-color: hsl(217.2 91.2% 59.8% / 0.9);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary);
-            color: var(--secondary-foreground);
-             border: 1px solid var(--border);
-        }
-        .btn-secondary:hover {
-            background-color: hsl(217.2 32.6% 17.5% / 0.8);
-        }
-
-        .subtotal-result {
-            margin-top: 1rem;
-            text-align: right;
-            font-size: 0.875rem;
-            color: var(--muted-foreground);
-        }
-        .subtotal-result span {
-            font-weight: 600;
-            color: var(--foreground);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--background); color: var(--foreground); }
+        .card { background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+        .card-title { font-size: 1.25rem; font-weight: 700; }
+        .label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--muted-foreground); margin-bottom: 0.5rem; }
+        .input, .select { display: flex; width: 100%; height: 2.5rem; padding: 0.5rem 0.75rem; background-color: var(--input); border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); font-size: 0.875rem; transition: all 0.2s; }
+        .input:focus, .select:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 2px var(--ring); }
+        .btn-primary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 0.75rem 1rem; border-radius: calc(var(--radius) - 2px); font-weight: 600; font-size: 1rem; background-color: var(--primary); color: var(--primary-foreground); cursor: pointer; }
+        .error-message { font-size: 0.75rem; color: var(--destructive-foreground); background-color: var(--destructive); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; }
     </style>
 </head>
 <body class="min-h-screen w-full flex items-start justify-center p-4 sm:p-8">
-    <main class="w-full max-w-4xl">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tighter">Calculadora de Custos</h1>
-            <p class="text-muted-foreground mt-2">Versão detalhada para vendedores.</p>
+    <main class="w-full max-w-4xl space-y-6">
+        <div class="text-center">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tighter">Calculadora Interna de Custos</h1>
+            <p class="text-muted-foreground mt-2">Use para simular custos e registrar propostas.</p>
         </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Informações do Orçamento</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="clientName" class="label">Nome do Cliente</label>
-                    <input type="text" id="clientName" class="input" placeholder="Ex: João da Silva">
-                </div>
-                <div>
-                    <label for="clientEmail" class="label">Email do Cliente</label>
-                    <input type="email" id="clientEmail" class="input" placeholder="Ex: joao.silva@email.com">
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="space-y-6">
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">Eleven Labs</h3></div>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="elevenLabsPlan" class="label">Plano</label>
-                            <select id="elevenLabsPlan" class="select" onchange="calculateTotalCost()">
-                                <option value="Starter">Starter ($5/mês)</option>
-                                <option value="Creator">Creator ($22/mês)</option>
-                                <option value="Pro">Pro ($99/mês)</option>
-                                <option value="Scale">Scale ($330/mês)</option>
-                                <option value="Business">Business ($1320/mês)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="elNumConversations" class="label">Conversas Mensais</label>
-                            <input type="number" id="elNumConversations" class="input" value="300" min="1" oninput="calculateTotalCost()">
-                        </div>
-                        <div>
-                            <label for="elAvgAudioMinutes" class="label">Tempo Médio de Áudio (min)</label>
-                            <input type="number" id="elAvgAudioMinutes" class="input" value="3" step="0.1" min="0.1" oninput="calculateTotalCost()">
+        
+        <form id="vendedor-form">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="space-y-6">
+                    <div class="card">
+                        <h3 class="card-title mb-4">Dados do Cliente</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="clientName" class="label">Nome</label>
+                                <input type="text" id="clientName" class="input">
+                            </div>
+                            <div>
+                                <label for="clientEmail" class="label">Email</label>
+                                <input type="email" id="clientEmail" class="input">
+                            </div>
                         </div>
                     </div>
-                    <div class="subtotal-result">Custo: <span id="elevenLabsCost">R$ 0.00</span></div>
+                    <div class="card">
+                        <h3 class="card-title mb-4">Eleven Labs (Voz)</h3>
+                        <select id="elevenLabsPlan" class="select" onchange="calculateCosts()">
+                            <option value="None">Nenhum</option>
+                            <option value="Starter">Starter ($5/mês)</option>
+                            <option value="Creator">Creator ($22/mês)</option>
+                        </select>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title mb-4">Hostinger VPS</h3>
+                        <select id="hostingerVpsPlan" class="select" onchange="calculateCosts()">
+                            <option value="KVM 2">KVM 2 (R$ 89,99/mês)</option>
+                            <option value="KVM 4">KVM 4 (R$ 159,99/mês)</option>
+                        </select>
+                    </div>
                 </div>
-
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">Hostinger VPS</h3></div>
-                     <div class="space-y-4">
-                        <div>
-                            <label for="hostingerVpsPlan" class="label">Plano</label>
-                            <select id="hostingerVpsPlan" class="select" onchange="calculateTotalCost()">
-                                <option value="KVM 1">KVM 1 (R$ 69,99/mês)</option>
-                                <option value="KVM 2">KVM 2 (R$ 89,99/mês)</option>
-                                <option value="KVM 4">KVM 4 (R$ 159,99/mês)</option>
-                                <option value="KVM 8">KVM 8 (R$ 329,99/mês)</option>
-                            </select>
+                <div class="space-y-6">
+                     <div class="card">
+                        <h3 class="card-title mb-4">ChatGPT (OpenAI)</h3>
+                        <div class="space-y-4">
+                            <label class="label">Escopo de Uso da IA</label>
+                            <input type="number" id="monthlyMessages" class="input" value="10000" oninput="calculateCosts()" placeholder="Total de mensagens/mês">
                         </div>
                     </div>
-                    <div class="subtotal-result">Custo: <span id="hostingerVpsCost">R$ 0.00</span></div>
-                </div>
-                 <div class="card">
-                    <div class="card-header"><h3 class="card-title">Domínio & Email</h3></div>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="domainYears" class="label">Anos de Registro Domínio (.top)</label>
-                            <input type="number" id="domainYears" class="input" value="1" min="1" oninput="calculateTotalCost()">
-                            <div class="subtotal-result">Custo Mensalizado: <span id="domainCost">R$ 0.00</span></div>
-                        </div>
-                        <hr class="border-border">
-                        <div>
-                           <label for="hostingerEmailPlan" class="label">Plano de E-mail</label>
-                            <select id="hostingerEmailPlan" class="select" onchange="calculateTotalCost()">
-                                <option value="Starter">Business Starter (R$ 11,99/mês)</option>
-                                <option value="Premium">Business Premium (R$ 13,99/mês)</option>
-                            </select>
-                        </div>
-                         <div>
-                            <label for="numEmailAccounts" class="label">Número de Contas</label>
-                            <input type="number" id="numEmailAccounts" class="input" value="1" min="1" oninput="calculateTotalCost()">
-                        </div>
+                    <div class="card">
+                        <h3 class="card-title mb-4">Supabase (DB)</h3>
+                        <select id="supabasePlan" class="select" onchange="calculateCosts()">
+                            <option value="Free">Free ($0/mês)</option>
+                            <option value="Pro">Pro ($25/mês)</option>
+                        </select>
                     </div>
-                    <div class="subtotal-result">Custo Total E-mail: <span id="hostingerEmailCost">R$ 0.00</span></div>
+                    <div class="card">
+                        <h3 class="card-title mb-4">Outros Custos Fixos</h3>
+                         <p class="text-sm text-muted-foreground">Domínio (.top) e Email (Business Starter)</p>
+                         <p class="text-lg font-semibold mt-2">R$ 15,41 / mês</p>
+                    </div>
                 </div>
             </div>
-            <div class="space-y-6">
-                 <div class="card">
-                    <div class="card-header"><h3 class="card-title">Supabase</h3></div>
-                    <div class="space-y-4">
-                         <div>
-                            <label for="supabasePlan" class="label">Plano</label>
-                            <select id="supabasePlan" class="select" onchange="calculateTotalCost()">
-                                <option value="Free">Free ($0/mês)</option>
-                                <option value="Pro">Pro ($25/mês)</option>
-                                <option value="Team">Team ($599/mês)</option>
-                            </select>
-                        </div>
-                        <div id="supabaseProUsage" class="hidden space-y-2 pt-2">
-                             <label class="label text-foreground font-semibold">Uso Adicional (Plano Pro)</label>
-                             <div>
-                                <label for="supabaseMaus" class="label !text-xs">MAUs (acima de 100k)</label>
-                                <input type="number" id="supabaseMaus" value="0" class="input" oninput="calculateTotalCost()">
-                             </div>
-                             <div>
-                                <label for="supabaseDbGb" class="label !text-xs">DB Size (GB) (acima de 8GB)</label>
-                                <input type="number" id="supabaseDbGb" value="0" class="input" oninput="calculateTotalCost()">
-                             </div>
-                              <div>
-                                <label for="supabaseBandwidthGb" class="label !text-xs">Bandwidth (GB) (acima de 250GB)</label>
-                                <input type="number" id="supabaseBandwidthGb" value="0" class="input" oninput="calculateTotalCost()">
-                             </div>
-                              <div>
-                                <label for="supabaseFileStorageGb" class="label !text-xs">File Storage (GB) (acima de 100GB)</label>
-                                <input type="number" id="supabaseFileStorageGb" value="0" class="input" oninput="calculateTotalCost()">
-                             </div>
-                        </div>
+
+            <div class="card mt-6">
+                <h3 class="card-title mb-4">Custos Base e Valores Finais</h3>
+                <div class="bg-muted p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <p class="text-sm text-muted-foreground">Custo de Implantação (Base Anual)</p>
+                        <p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p>
                     </div>
-                    <div class="subtotal-result">Custo: <span id="supabaseCost">R$ 0.00</span></div>
+                    <div class="text-center">
+                        <p class="text-sm text-muted-foreground">Sugestão de Recorrência Mensal (Custo x2)</p>
+                        <p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">ChatGPT (OpenAI API)</h3></div>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="chatgptModel" class="label">Modelo</label>
-                            <select id="chatgptModel" class="select" onchange="calculateTotalCost()">
-                                <option value="gpt-4o-mini">GPT-4o mini</option>
-                                <option value="gpt-4o">GPT-4o</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="label !mb-0">Calcular por conversas?</span>
-                             <input type="checkbox" id="chatgptCalculateByConversation" onchange="toggleChatgptInputs(); calculateTotalCost();" class="h-4 w-4">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 pt-2">
-                             <button onclick="setChatgptScenario('basico')" class="btn btn-secondary text-xs">Básico</button>
-                             <button onclick="setChatgptScenario('medio')" class="btn btn-secondary text-xs">Médio</button>
-                             <button onclick="setChatgptScenario('avancado')" class="btn btn-secondary text-xs">Avançado</button>
-                             <button onclick="setChatgptScenario('business')" class="btn btn-secondary text-xs">Business</button>
-                        </div>
-                        <div id="chatgptConversationInput" class="hidden space-y-2 pt-2">
-                           <div>
-                               <label for="chatgptClientsPerDay" class="label !text-xs">Clientes Diários</label>
-                               <input type="number" id="chatgptClientsPerDay" value="20" class="input" oninput="calculateTotalCost()">
-                           </div>
-                           <div>
-                               <label for="chatgptMessagesPerPerson" class="label !text-xs">Msg por pessoa</label>
-                               <input type="number" id="chatgptMessagesPerPerson" value="10" class="input" oninput="calculateTotalCost()">
-                           </div>
-                        </div>
+                <hr class="border-border my-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="finalImplementationValue" class="label">Valor de Implantação Acertado</label>
+                        <input type="number" id="finalImplementationValue" class="input" placeholder="0.00">
                     </div>
-                    <div class="subtotal-result">Custo: <span id="chatgptCost">R$ 0.00</span></div>
+                    <div>
+                        <label for="finalMonthlyValue" class="label">Valor Mensal Acertado</label>
+                        <input type="number" id="finalMonthlyValue" class="input" placeholder="0.00">
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="card mt-6 sticky bottom-4 z-10 shadow-lg">
-             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                     <label for="usdRate" class="label !mb-0 whitespace-nowrap">Taxa Câmbio (USD-BRL)</label>
-                     <input type="number" id="usdRate" value="5.40" step="0.01" class="input w-24" oninput="calculateTotalCost()">
-                </div>
-                <div class="text-center sm:text-right">
-                    <p class="text-lg text-muted-foreground">Custo Total Mensal:</p>
-                    <p id="grandTotalCost" class="text-3xl sm:text-4xl font-extrabold tracking-tighter text-primary">R$ 0.00</p>
-                </div>
-                <button id="sendBudgetButton" class="btn btn-primary w-full sm:w-auto mt-4 sm:mt-0">
-                    Enviar Orçamento
-                </button>
-             </div>
-             <div id="feedbackMessage" class="text-center mt-4 text-sm"></div>
-        </div>
+            
+            <div class="card mt-6">
+                <button type="button" id="sendBudgetButton" class="btn-primary">Registrar Proposta</button>
+                <div id="feedbackMessage" class="mt-4 text-center h-4"></div>
+            </div>
+        </form>
     </main>
 
     <script>
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
 
         const pricing = {
+            usdRate: 5.40,
             elevenlabs: {
-                "Starter": { "plan_cost_usd": 5, "included_characters": 30000, "overage_cost_per_1000_chars_usd": 0.30 },
-                "Creator": { "plan_cost_usd": 22, "included_characters": 100000, "overage_cost_per_1000_chars_usd": 0.30 },
-                "Pro": { "plan_cost_usd": 99, "included_characters": 500000, "overage_cost_per_1000_chars_usd": 0.24 },
-                "Scale": { "plan_cost_usd": 330, "included_characters": 2000000, "overage_cost_per_1000_chars_usd": 0.18 },
-                "Business": { "plan_cost_usd": 1320, "included_characters": 22000000, "overage_cost_per_1000_chars_usd": 0.12 },
+                "None": { monthly_cost_usd: 0 },
+                "Starter": { monthly_cost_usd: 5 },
+                "Creator": { monthly_cost_usd: 22 },
             },
-            hostingerVps: { "KVM 1": 69.99, "KVM 2": 89.99, "KVM 4": 159.99, "KVM 8": 329.99, },
+            hostingerVps: {
+                "KVM 2": { monthly_cost_brl: 89.99 },
+                "KVM 4": { monthly_cost_brl: 159.99 },
+            },
             supabase: {
-                "Free": { "plan_cost_usd": 0 },
-                "Pro": {
-                    "plan_cost_usd": 25,
-                    "overage_mau_usd": 0.00325, "overage_db_gb_usd": 0.125,
-                    "overage_bandwidth_gb_usd": 0.09, "overage_file_storage_gb_usd": 0.021,
-                },
-                "Team": { "plan_cost_usd": 599 },
+                "Free": { monthly_cost_usd: 0 },
+                "Pro": { monthly_cost_usd: 25 },
             },
-            chatgpt: {
-                "gpt-4o-mini": { "input_cost_per_1m_tokens_usd": 0.15, "output_cost_per_1m_tokens_usd": 0.60 },
-                "gpt-4o": { "input_cost_per_1m_tokens_usd": 5.00, "output_cost_per_1m_tokens_usd": 15.00 },
-            },
-            domain: { "annual_cost_brl": 40.99 },
-            hostingerEmail: { "Starter": 11.99, "Premium": 13.99 },
+            chatgpt: { cost_per_1k_messages_usd: 0.10 }, // Custo estimado por 1000 msgs
+            fixed_brl: { domain_email: (40.99 / 12) + 11.99 }
         };
-
-        const chatgptScenarios = {
-            "basico": { messagesPerPerson: 10, clientsPerDay: 20 },
-            "medio": { messagesPerPerson: 10, clientsPerDay: 40 },
-            "avancado": { messagesPerPerson: 10, clientsPerDay: 80 },
-            "business": { messagesPerPerson: 25, clientsPerDay: 80 }
-        };
-
+        
         function getVal(id) { return document.getElementById(id).value; }
         function getNum(id) { return parseFloat(getVal(id)) || 0; }
-        function getInt(id) { return parseInt(getVal(id)) || 0; }
-        function isChecked(id) { return document.getElementById(id).checked; }
 
-        function calculateElevenLabsCost(rate) {
-            const plan = pricing.elevenlabs[getVal('elevenLabsPlan')];
-            const conversations = getInt('elNumConversations');
-            const audioMinutes = getNum('elAvgAudioMinutes');
-            if (conversations <= 0 || audioMinutes <= 0) return plan.plan_cost_usd * rate;
+        function calculateCosts() {
+            const rate = pricing.usdRate;
+            let monthlyCostBRL = 0;
+            let monthlyCostUSD = 0;
             
-            const totalChars = conversations * audioMinutes * 1000;
-            let costUsd = plan.plan_cost_usd;
-            if (totalChars > plan.included_characters) {
-                const overageChars = totalChars - plan.included_characters;
-                costUsd += (overageChars / 1000) * plan.overage_cost_per_1000_chars_usd;
-            }
-            return costUsd * rate;
-        }
-
-        function calculateHostingerVpsCost() {
-            return pricing.hostingerVps[getVal('hostingerVpsPlan')] || 0;
-        }
-
-        function calculateSupabaseCost(rate) {
-            const planName = getVal('supabasePlan');
-            const plan = pricing.supabase[planName];
-            let costUsd = plan.plan_cost_usd || 0;
+            monthlyCostBRL += pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl;
+            monthlyCostBRL += pricing.fixed_brl.domain_email;
             
-            if (planName === 'Pro') {
-                costUsd += getInt('supabaseMaus') * plan.overage_mau_usd;
-                costUsd += getNum('supabaseDbGb') * plan.overage_db_gb_usd;
-                costUsd += getNum('supabaseBandwidthGb') * plan.overage_bandwidth_gb_usd;
-                costUsd += getNum('supabaseFileStorageGb') * plan.overage_file_storage_gb_usd;
-            }
-            return costUsd * rate;
+            monthlyCostUSD += pricing.elevenlabs[getVal('elevenLabsPlan')].monthly_cost_usd;
+            monthlyCostUSD += pricing.supabase[getVal('supabasePlan')].monthly_cost_usd;
+            
+            const totalMessages = getNum('monthlyMessages');
+            monthlyCostUSD += (totalMessages / 1000) * pricing.chatgpt.cost_per_1k_messages_usd;
+
+            const totalMonthlyCost = monthlyCostBRL + (monthlyCostUSD * rate);
+            const totalAnnualCost = totalMonthlyCost * 12;
+            const suggestedMonthly = totalMonthlyCost * 2;
+            
+            document.getElementById('implementationCost').textContent = `R$ ${totalAnnualCost.toFixed(2)}`;
+            document.getElementById('monthlyRevenue').textContent = `R$ ${suggestedMonthly.toFixed(2)}`;
         }
         
-        function calculateChatgptCost(rate) {
-            const model = pricing.chatgpt[getVal('chatgptModel')];
-            if (!isChecked('chatgptCalculateByConversation')) return 0;
+        function validateEmail(email) {
+            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
 
-            const clients = getInt('chatgptClientsPerDay');
-            const messages = getInt('chatgptMessagesPerPerson');
-            if (clients <= 0 || messages <= 0) return 0;
+        async function sendBudget() {
+            const feedbackEl = document.getElementById('feedbackMessage');
+            feedbackEl.innerHTML = '';
             
-            // Simplified calculation based on your original logic's intent
-            const wordsPerIteration = 150, promptWords = 450, outputWords = 250, tokensPerWord = 2;
-            const inputTokens = (wordsPerIteration + promptWords) * tokensPerWord;
-            const outputTokens = outputWords * tokensPerWord;
-            
-            const monthlyInputMillions = (inputTokens * messages * clients * 30) / 1000000;
-            const monthlyOutputMillions = (outputTokens * messages * clients * 30) / 1000000;
-            
-            const costUsd = (monthlyInputMillions * model.input_cost_per_1m_tokens_usd) + (monthlyOutputMillions * model.output_cost_per_1m_tokens_usd);
-            return costUsd * rate;
-        }
-        
-        function calculateDomainCost() {
-            const years = getInt('domainYears');
-            return years > 0 ? (pricing.domain.annual_cost_brl * years) / (12 * years) : 0;
-        }
-
-        function calculateHostingerEmailCost() {
-            return (pricing.hostingerEmail[getVal('hostingerEmailPlan')] || 0) * getInt('numEmailAccounts');
-        }
-
-        function calculateTotalCost() {
-            const rate = getNum('usdRate');
-            if (rate <= 0) return;
-
-            const costs = {
-                elevenLabs: calculateElevenLabsCost(rate),
-                hostingerVps: calculateHostingerVpsCost(),
-                supabase: calculateSupabaseCost(rate),
-                chatgpt: calculateChatgptCost(rate),
-                domain: calculateDomainCost(),
-                hostingerEmail: calculateHostingerEmailCost()
-            };
-
-            const total = Object.values(costs).reduce((sum, cost) => sum + cost, 0);
-
-            document.getElementById('elevenLabsCost').textContent = `R$ ${costs.elevenLabs.toFixed(2)}`;
-            document.getElementById('hostingerVpsCost').textContent = `R$ ${costs.hostingerVps.toFixed(2)}`;
-            document.getElementById('supabaseCost').textContent = `R$ ${costs.supabase.toFixed(2)}`;
-            document.getElementById('chatgptCost').textContent = `R$ ${costs.chatgpt.toFixed(2)}`;
-            document.getElementById('domainCost').textContent = `R$ ${costs.domain.toFixed(2)}`;
-            document.getElementById('hostingerEmailCost').textContent = `R$ ${costs.hostingerEmail.toFixed(2)}`;
-            document.getElementById('grandTotalCost').textContent = `R$ ${total.toFixed(2)}`;
-            
-            // Toggle Supabase visibility
-            document.getElementById('supabaseProUsage').style.display = getVal('supabasePlan') === 'Pro' ? 'block' : 'none';
-        }
-        
-        function toggleChatgptInputs() {
-            document.getElementById('chatgptConversationInput').style.display = isChecked('chatgptCalculateByConversation') ? 'grid' : 'none';
-        }
-
-        function setChatgptScenario(type) {
-            const scenario = chatgptScenarios[type];
-            if(scenario) {
-                document.getElementById('chatgptCalculateByConversation').checked = true;
-                document.getElementById('chatgptClientsPerDay').value = scenario.clientsPerDay;
-                document.getElementById('chatgptMessagesPerPerson').value = scenario.messagesPerPerson;
-                toggleChatgptInputs();
-                calculateTotalCost();
-            }
-        }
-        
-        async function sendBudgetToWebhook() {
             const clientName = getVal('clientName');
             const clientEmail = getVal('clientEmail');
-            const feedbackEl = document.getElementById('feedbackMessage');
-            
-            if (!clientName || !clientEmail) {
-                feedbackEl.textContent = "Por favor, preencha o nome e o email do cliente.";
-                feedbackEl.style.color = "hsl(0 100% 50%)";
+            const finalImplementation = getNum('finalImplementationValue');
+            const finalMonthly = getNum('finalMonthlyValue');
+
+            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) {
+                feedbackEl.innerHTML = `<p class="error-message">Preencha os dados do cliente e os valores finais.</p>`;
                 return;
             }
-
+            if (!validateEmail(clientEmail)) {
+                 feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`;
+                return;
+            }
+            
             const budgetData = {
                 source: "calculadora_vendedores",
-                clientInfo: {
-                    name: clientName,
-                    email: clientEmail
+                clientInfo: { name: clientName, email: clientEmail },
+                costDetails: {
+                    elevenLabsPlan: getVal('elevenLabsPlan'),
+                    hostingerVpsPlan: getVal('hostingerVpsPlan'),
+                    supabasePlan: getVal('supabasePlan'),
+                    monthlyMessages: getNum('monthlyMessages'),
                 },
-                quoteDetails: {
-                    usdToBrlRate: getNum('usdRate'),
-                    elevenLabs: {
-                        plan: getVal('elevenLabsPlan'),
-                        conversations: getInt('elNumConversations'),
-                        avgAudioMinutes: getNum('elAvgAudioMinutes'),
-                        costBRL: document.getElementById('elevenLabsCost').textContent
-                    },
-                    hostingerVps: {
-                        plan: getVal('hostingerVpsPlan'),
-                        costBRL: document.getElementById('hostingerVpsCost').textContent
-                    },
-                    supabase: {
-                        plan: getVal('supabasePlan'),
-                        costBRL: document.getElementById('supabaseCost').textContent
-                    },
-                    chatgpt: {
-                        model: getVal('chatgptModel'),
-                        clientsPerDay: getInt('chatgptClientsPerDay'),
-                        messagesPerPerson: getInt('chatgptMessagesPerPerson'),
-                        costBRL: document.getElementById('chatgptCost').textContent
-                    },
-                    domainAndEmail: {
-                        domainYears: getInt('domainYears'),
-                        emailPlan: getVal('hostingerEmailPlan'),
-                        emailAccounts: getInt('numEmailAccounts'),
-                        costBRL: `R$ ${(getNum('domainCost') + getNum('hostingerEmailCost')).toFixed(2)}`
-                    }
+                costBasis: {
+                    implementation_base_cost_brl: document.getElementById('implementationCost').textContent,
+                    suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent,
                 },
-                totalMonthlyCostBRL: document.getElementById('grandTotalCost').textContent
+                finalDeal: {
+                    implementation_value_brl: finalImplementation,
+                    monthly_revenue_brl: finalMonthly,
+                }
             };
-
-            feedbackEl.textContent = "Enviando orçamento...";
-            feedbackEl.style.color = "hsl(210 40% 98%)";
-
+            
+            feedbackEl.textContent = "Registrando proposta...";
             try {
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(budgetData)
                 });
-
-                if (response.ok) {
-                    feedbackEl.textContent = "Orçamento enviado com sucesso!";
-                    feedbackEl.style.color = "hsl(142.1 76.2% 46.5%)";
-                } else {
-                    throw new Error(`Erro no servidor: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                feedbackEl.innerHTML = `<p class="text-green-400">Proposta registrada com sucesso!</p>`;
+                document.getElementById('vendedor-form').reset();
+                calculateCosts();
             } catch (error) {
-                console.error("Erro ao enviar para o webhook:", error);
-                feedbackEl.textContent = "Falha ao enviar o orçamento. Tente novamente.";
-                feedbackEl.style.color = "hsl(0 100% 50%)";
+                console.error("Erro ao enviar webhook:", error);
+                feedbackEl.innerHTML = `<p class="error-message">Falha no registro. Tente novamente.</p>`;
             }
         }
-
-        document.getElementById('sendBudgetButton').addEventListener('click', sendBudgetToWebhook);
-
-        window.onload = function() {
-            toggleChatgptInputs();
-            calculateTotalCost();
-        };
+        
+        document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
+        window.onload = calculateCosts;
     </script>
 </body>
 </html>
