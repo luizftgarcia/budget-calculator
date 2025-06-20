@@ -45,12 +45,13 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="projectTier" class="label">Nível do Projeto</label>
-                                <select id="projectTier" class="select" onchange="updateHoursFromTier()">
+                                <select id="projectTier" class="select" onchange="updateHoursFromTier();updateAllDescriptions();">
                                     <option value="Básico">Básico</option>
                                     <option value="Médio">Médio</option>
                                     <option value="Avançado">Avançado</option>
                                     <option value="Enterprise">Enterprise</option>
                                     <option value="Personalizado" disabled>Personalizado</option>
+                                    <div id="projectTierDescription" class="description-box"></div>
                                 </select>
                             </div>
                             <div>
@@ -65,15 +66,18 @@
                             </div>
                             <div>
                                 <label for="serverPlan" class="label">Configuração do Servidor</label>
-                                <select id="serverPlan" class="select" onchange="calculateCosts()"><option value="Basic">Básico</option><option value="Standard">Padrão</option><option value="Advanced">Avançado</option></select>
+                                <select id="serverPlan" class="select" onchange="calculateCosts();updateAllDescriptions();"><option value="Basic">Básico</option><option value="Standard">Padrão</option><option value="Advanced">Avançado</option></select>
+                                <div id="serverDescription" class="description-box"></div>
                             </div>
                             <div>
                                 <label for="dbPlan" class="label">Banco de Dados</label>
-                                <select id="dbPlan" class="select" onchange="calculateCosts()"><option value="Básico">Básico</option><option value="Profissional">Profissional</option></select>
+                                <select id="dbPlan" class="select" onchange="calculateCosts();updateAllDescriptions();"><option value="Básico">Básico</option><option value="Profissional">Profissional</option></select>
+                                <div id="dbDescription" class="description-box"></div>
                             </div>
                             <div>
                                 <label for="audioPlan" class="label">Módulo de Voz (Áudio)</label>
-                                <select id="audioPlan" class="select" onchange="calculateCosts()"><option value="Nenhum">Nenhum</option><option value="Iniciante">Iniciante</option><option value="Criador">Criador</option><option value="Profissional">Profissional</option></select>
+                                <select id="audioPlan" class="select" onchange="calculateCosts();updateAllDescriptions();"><option value="Nenhum">Nenhum</option><option value="Iniciante">Iniciante</option><option value="Criador">Criador</option><option value="Profissional">Profissional</option></select>
+                                <div id="audioDescription" class="description-box"></div>
                             </div>
                         </div>
                     </div>
@@ -101,20 +105,32 @@
     <script>
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
         const pricing = {
-            usdRate: 5.40,
-            impl_hourly_rate_brl: 160,
-            projectTiers: {
-                "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280,   tokens_per_message: 900 },
-                "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920,   tokens_per_message: 1650 },
-                "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 3000 },
-                "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 5350 }
-            },
-            server: { "Basic": { monthly_cost_brl: 89.99 }, "Standard": { monthly_cost_brl: 159.99 }, "Advanced": { monthly_cost_brl: 329.99 }, },
-            database: { "Básico": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 }, },
-            audio: { "Nenhum": { monthly_cost_usd: 0 }, "Iniciante": { monthly_cost_usd: 5 }, "Criador": { monthly_cost_usd: 22 }, "Profissional": { monthly_cost_usd: 99 } },
-            ai: { cost_per_million_tokens_usd: 0.40 },
-            other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
-        };
+    usdRate: 5.40,
+    impl_hourly_rate_brl: 160,
+    projectTiers: {
+        "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280,   tokens_per_message: 900, description: "Ideal para projetos de entrada, com automações simples e foco em um único processo de negócio. Menor tempo de desenvolvimento." },
+        "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920,   tokens_per_message: 1650, description: "Para negócios em crescimento que precisam de múltiplos processos automatizados e maior capacidade de conversas." },
+        "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 3000, description: "Solução robusta para empresas que necessitam de integrações complexas, alta performance e um grande volume de interações." },
+        "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 5350, description: "Para grandes corporações com requisitos de segurança, escalabilidade e suporte premium. Totalmente customizável." }
+    },
+    server: {
+        "Basic": { monthly_cost_brl: 89.99, description: "Adequado para baixo volume de tráfego e testes iniciais. Performance básica." },
+        "Standard": { monthly_cost_brl: 159.99, description: "O mais recomendado. Suporta um volume moderado de tráfego e processos mais complexos, garantindo boa performance." },
+        "Advanced": { monthly_cost_brl: 329.99, description: "Para aplicações de alta demanda que exigem máxima velocidade e capacidade de processamento." }
+    },
+    database: {
+        "Básico": { monthly_cost_usd: 0, description: "Para provas de conceito e projetos com pouquíssimos dados. Não recomendado para clientes em produção." },
+        "Profissional": { monthly_cost_usd: 25, description: "Essencial para qualquer cliente em produção. Garante que o sistema esteja sempre online, com backups e sem perda de dados." }
+    },
+    audio: {
+        "Nenhum": { monthly_cost_usd: 0, description: "O sistema não terá capacidade de gerar ou responder com áudio." },
+        "Iniciante": { monthly_cost_usd: 5, description: "Para um baixo volume de áudios, ideal para testes e aplicações com pouca interação por voz." },
+        "Criador": { monthly_cost_usd: 22, description: "Bom para a maioria dos casos de uso com interações regulares por voz." },
+        "Profissional": { monthly_cost_usd: 99, description: "Para um alto volume de geração de áudio e acesso a funcionalidades avançadas." }
+    },
+    ai: { cost_per_million_tokens_usd: 0.40 },
+    other_costs_brl: { domain_email: (40.99 / 12) + 11.99 }
+};
 
         function getVal(id) { return document.getElementById(id).value; }
         function getNum(id) { return parseFloat(getVal(id)) || 0; }
@@ -149,6 +165,7 @@
             }
             calculateCosts();
         }
+        
 
         function updateTierFromHours() {
             const hours = getNum('implementationHours');
@@ -175,7 +192,15 @@
             newField.firstElementChild.id = linkFieldId;
             container.appendChild(newField);
         }
-
+        function updateAllDescriptions() {
+            document.getElementById('projectTierDescription').textContent = pricing.projectTiers[getVal('projectTier')].description;
+            document.getElementById('serverDescription').textContent = pricing.server[getVal('serverPlan')].description;
+            document.getElementById('dbDescription').textContent = pricing.database[getVal('dbPlan')].description;
+            document.getElementById('audioDescription').textContent = pricing.audio[getVal('audioPlan')].description;
+            
+            // Recalcula os custos sempre que uma descrição muda
+            calculateCosts();
+        }
         function validateEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
         function validatePhone(phone) { if (!phone) return true; const re = /^\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4}$/; return re.test(phone); }
 
@@ -222,7 +247,16 @@
         });
         document.getElementById('addLinkButton').addEventListener('click', addLinkField);
         document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
-        window.onload = updateHoursFromTier;
+        function initializePage() {
+            // Primeiro, sincroniza as horas com o tier padrão
+            updateHoursFromTier(); 
+            
+            // Depois, atualiza todas as descrições (apenas na página de parceiros)
+            if (typeof updateAllDescriptions === 'function') {
+            updateAllDescriptions();
+        }
+        window.onload = initializePage;
+}
     </script>
 </body>
 </html>
