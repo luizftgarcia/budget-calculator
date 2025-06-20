@@ -197,7 +197,7 @@
             // --- 1. Custo Base da Infraestrutura ---
             const rate = pricing.usdRate;
             // Custos em Reais (Servidor, Domínio, Email)
-            let monthlyInfraBRL = pricing.server[getVal('serverPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
+            let monthlyInfraBRL = pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
             // Custos em Dólar (Banco de Dados)
             let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd;
         
