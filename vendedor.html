@@ -175,6 +175,11 @@
                 "GPT-4o":        { cost_per_1k_messages_usd: 2.50 },
                 "GPT-4.1 Turbo": { cost_per_1k_messages_usd: 3.00 }
             },
+            messageSizes: {
+                "Curta": { tokens: 200 },
+                "Média": { tokens: 700 },
+                "Longa": { tokens: 2000 }
+            },
             hostingerVps: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
             database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25, overage_mau_usd: 0.00325, overage_db_gb_usd: 0.125 } },
             audio: {
@@ -192,27 +197,61 @@
         function getNum(id) { return parseFloat(getVal(id)) || 0; }
 
         function calculateCosts() {
+            // --- 1. Custo Base da Infraestrutura ---
             const rate = pricing.usdRate;
-            let monthlyInfraBRL = pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
-            let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd + pricing.audio[getVal('audioPlan')].monthly_cost_usd;
+            // Custos em Reais (Servidor, Domínio, Email)
+            let monthlyInfraBRL = pricing.server[getVal('serverPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
+            // Custos em Dólar (Banco de Dados)
+            let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd;
+        
+            // --- 2. NOVA LÓGICA DE CÁLCULO DE IA (BASEADO EM USO) ---
+            const monthlyClients = getNum('iaMonthlyClients');
+            const messagesPerConvo = getNum('iaMessagesPerConvo');
+            const totalMonthlyMessages = monthlyClients * messagesPerConvo;
             
-            const projectTierKey = getVal('projectTier');
-            const chatGptModelKey = getVal('chatgptModel');
+            const messageSizeKey = getVal('iaMessageSize');
+            const tokensPerMessage = pricing.messageSizes[messageSizeKey].tokens;
+            const totalMonthlyTokens = totalMonthlyMessages * tokensPerMessage;
             
-            const costPer1kMessages = pricing.chatgpt[chatGptModelKey].cost_per_1k_messages_usd;
-            const monthlyMessages = getNum('monthlyMessages');
-            monthlyInfraUSD += (monthlyMessages / 1000) * costPer1kMessages;
+            const chatModelKey = getVal('chatgptModel');
+            const costPerMillionTokens = pricing.chatgpt[chatModelKey] ? pricing.chatgpt[chatModelKey].cost_per_million_tokens_usd : 0;
             
+            monthlyInfraUSD += (totalMonthlyTokens / 1000000) * costPerMillionTokens;
+            
+            // --- 3. NOVA LÓGICA DE CÁLCULO DE VOZ (BASEADO EM USO) ---
+            const audioPlanKey = getVal('audioPlan');
+            const audioPlan = pricing.audio[audioPlanKey];
+            const audioMonthlyConvos = getNum('audioMonthlyConvos');
+            const audioMinutesPerConvo = getNum('audioMinutesPerConvo');
+            const totalMonthlyMinutes = audioMonthlyConvos * audioMinutesPerConvo;
+            
+            let audioCostUSD = 0;
+            // Apenas calcula se um plano de áudio foi selecionado
+            if (audioPlan && audioPlan.plan_cost_usd !== undefined && totalMonthlyMinutes > 0) {
+                audioCostUSD = audioPlan.plan_cost_usd;
+                // Calcula o custo excedente (overage) se o uso for maior que o incluído no plano
+                if (totalMonthlyMinutes > audioPlan.included_minutes) {
+                    const overageMinutes = totalMonthlyMinutes - audioPlan.included_minutes;
+                    audioCostUSD += overageMinutes * audioPlan.overage_cost_per_minute_usd;
+                }
+            }
+            monthlyInfraUSD += audioCostUSD;
+        
+            // --- 4. Custo Total Mensal da Infraestrutura ---
             const totalMonthlyInfraCost = monthlyInfraBRL + (monthlyInfraUSD * rate);
-
+        
+            // --- 5. Custos de Mão de Obra ---
+            const projectTierKey = getVal('projectTier');
             const implHours = getNum('implementationHours');
             const implLaborCost = implHours * pricing.impl_hourly_rate_brl;
-            
             const supportMonthlyCost = pricing.projectTiers[projectTierKey] ? pricing.projectTiers[projectTierKey].support_monthly_cost : pricing.projectTiers['Básico'].support_monthly_cost;
-
+        
+            // --- 6. Valores Finais de Referência ---
             const finalImplementationCost = implLaborCost + (totalMonthlyInfraCost * 12);
-            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 2);
-
+            // CORREÇÃO FINAL: Multiplicador alterado para 3, conforme definido anteriormente
+            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 3);
+        
+            // --- 7. Exibição na Tela ---
             document.getElementById('implementationCost').textContent = `R$ ${finalImplementationCost.toFixed(2)}`;
             document.getElementById('monthlyRevenue').textContent = `R$ ${finalMonthlyCost.toFixed(2)}`;
         }
