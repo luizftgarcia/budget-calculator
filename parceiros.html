@@ -91,14 +91,43 @@
                     <button type="button" id="addLinkButton" class="btn mt-2">+ Adicionar Link</button>
                 </div>
                 <div class="card">
-                    <h3 class="card-title mb-4">4. Valores Finais da Proposta</h3>
-                    <div class="bg-muted p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Implantação)</p><p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
-                        <div class="text-center"><p class="text-sm text-muted-foreground">Valor de Referência (Mensal)</p><p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p></div>
+                    <h3 class="card-title mb-4">4. Previsão de Ganhos (Modelo Comissionado)</h3>
+                    
+                    <div class="mb-6">
+                        <p class="label text-center">Com base na configuração do projeto, estes são os valores finais que serão apresentados ao cliente pela CONVERT.AI.</p>
+                        <div class="bg-muted p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <p class="text-sm text-muted-foreground">Preço Final (Implantação)</p>
+                                <p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm text-muted-foreground">Preço Final (Mensal)</p>
+                                <p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="finalImplementationValue" class="label">Valor de Implantação Acertado (R$)</label><input type="number" id="finalImplementationValue" class="input"></div><div><label for="finalMonthlyValue" class="label">Valor Mensal Acertado (R$)</label><input type="number" id="finalMonthlyValue" class="input"></div></div>
+                
+                    <div>
+                        <p class="label text-center">Sua comissão estimada sobre os valores acima será:</p>
+                        <div class="bg-primary/10 p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <div class="text-center">
+                                <p class="text-sm text-muted-foreground">Comissão sobre Setup (10%)</p>
+                                <p id="commissionSetup" class="text-2xl font-bold text-green-400">R$ 0,00</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm text-muted-foreground">Comissão sobre Mensalidade (15%)</p>
+                                <p id="commissionMonthly" class="text-2xl font-bold text-green-400">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+                        <input type="hidden" id="finalImplementationValue">
+                        <input type="hidden" id="finalMonthlyValue">
                 </div>
-                <div class="card"><button type="button" id="sendBudgetButton" class="btn-primary">Enviar Orçamento para Análise</button><div id="feedbackMessage" class="mt-4 text-center h-4"></div></div>
+                
+                <div class="card">
+                    <button type="button" id="sendBudgetButton" class="btn-primary">Enviar Simulação para Análise</button>
+                    <div id="feedbackMessage" class="mt-4 text-center h-4"></div>
+                </div>
             </div>
         </form>
     </main>
@@ -118,6 +147,10 @@
         "Basic": { monthly_cost_brl: 89.99, description: "Adequado para baixo volume de tráfego e testes iniciais. Performance básica." },
         "Standard": { monthly_cost_brl: 159.99, description: "O mais recomendado. Suporta um volume moderado de tráfego e processos mais complexos, garantindo boa performance." },
         "Advanced": { monthly_cost_brl: 329.99, description: "Para aplicações de alta demanda que exigem máxima velocidade e capacidade de processamento." }
+    },
+    commissionRates: {
+        setup_percent: 10,
+        monthly_percent: 15
     },
     database: {
         "Básico": { monthly_cost_usd: 0, description: "Para provas de conceito e projetos com pouquíssimos dados. Não recomendado para clientes em produção." },
@@ -146,16 +179,26 @@
             const monthlyMillionTokens = (conversations * tokensPerMessage * 30) / 1000000;
             monthlyInfraUSD += monthlyMillionTokens * pricing.ai.cost_per_million_tokens_usd;
             const totalMonthlyInfraCost = monthlyInfraBRL + (monthlyInfraUSD * rate);
-
-            const implHours = getNum('implementationHours');
             const implLaborCost = implHours * pricing.impl_hourly_rate_brl;
             const supportMonthlyCost = pricing.projectTiers[projectTierKey] ? pricing.projectTiers[projectTierKey].support_monthly_cost : pricing.projectTiers['Básico'].support_monthly_cost;
-
+        
+            // --- LÓGICA DE VALORES FINAIS E COMISSÃO ---
             const finalImplementationCost = implLaborCost + (totalMonthlyInfraCost * 12);
-            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 4);
-
+            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 3);
+        
+            // Atualiza os displays de Preço Final
             document.getElementById('implementationCost').textContent = `R$ ${finalImplementationCost.toFixed(2)}`;
             document.getElementById('monthlyRevenue').textContent = `R$ ${finalMonthlyCost.toFixed(2)}`;
+            
+            // Atualiza os inputs ocultos para o envio do formulário
+            document.getElementById('finalImplementationValue').value = finalImplementationCost.toFixed(2);
+            document.getElementById('finalMonthlyValue').value = finalMonthlyCost.toFixed(2);
+        
+            // Calcula e exibe a comissão do parceiro
+            const setupCommission = finalImplementationCost * (pricing.commissionRates.setup_percent / 100);
+            const monthlyCommission = finalMonthlyCost * (pricing.commissionRates.monthly_percent / 100);
+            document.getElementById('commissionSetup').textContent = `R$ ${setupCommission.toFixed(2)}`;
+            document.getElementById('commissionMonthly').textContent = `R$ ${monthlyCommission.toFixed(2)}`;
         }
         
         function updateHoursFromTier() {
@@ -241,22 +284,25 @@
             } catch (error) { console.error("Erro:", error); feedbackEl.innerHTML = `<p class="error-message">Falha no envio.</p>`; }
         }
         
-        document.querySelectorAll('input, select').forEach(el => {
-            if (el.id !== 'projectTier' && el.id !== 'implementationHours') {
-                el.addEventListener('input', calculateCosts);
-            }
-        });
-        document.getElementById('addLinkButton').addEventListener('click', addLinkField);
-        document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
-        function initializePage() {
-            // Primeiro, sincroniza as horas com o tier padrão
-            updateHoursFromTier(); 
-            
-            // Depois, atualiza todas as descrições (apenas na página de parceiros)
-            if (typeof updateAllDescriptions === 'function') {
+    document.querySelectorAll('#parceiro-form select, #parceiro-form input').forEach(el => {
+        if (el.id !== 'projectTier' && el.id !== 'implementationHours') {
+            el.addEventListener('input', calculateCosts);
+            el.addEventListener('change', calculateCosts);
+        }
+    });
+    
+    document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
+    document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
+    document.getElementById('addLinkButton').addEventListener('click', addLinkField);
+    document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
+    
+    function initializePage() {
+        updateHoursFromTier();
+        if (typeof updateAllDescriptions === 'function') {
             updateAllDescriptions();
         }
-        window.onload = initializePage;
+    }
+    window.onload = initializePage;
 }
     </script>
 </body>
