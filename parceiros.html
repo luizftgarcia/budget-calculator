@@ -3,323 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orçamento de Planos para Parceiros</title>
+    <title>Calculadora de Orçamento para Parceiros</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --background: hsl(222.2 84% 4.9%);
-            --foreground: hsl(210 40% 98%);
-            --card: hsl(222.2 84% 4.9%);
-            --card-foreground: hsl(210 40% 98%);
-            --primary: hsl(217.2 91.2% 59.8%);
-            --primary-foreground: hsl(210 40% 98%);
-            --muted: hsl(217.2 32.6% 17.5%);
-            --muted-foreground: hsl(215 20.2% 65.1%);
-            --border: hsl(217.2 32.6% 17.5%);
-            --input: hsl(217.2 32.6% 17.5%);
-            --ring: hsl(217.2 91.2% 59.8%);
-            --radius: 0.75rem;
+            --background: hsl(222.2 84% 4.9%); --foreground: hsl(210 40% 98%);
+            --card: hsl(222.2 84% 4.9%); --card-foreground: hsl(210 40% 98%);
+            --primary: hsl(217.2 91.2% 59.8%); --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(217.2 32.6% 17.5%); --secondary-foreground: hsl(210 40% 98%);
+            --muted: hsl(217.2 32.6% 17.5%); --muted-foreground: hsl(215 20.2% 65.1%);
+            --border: hsl(217.2 32.6% 17.5%); --input: hsl(217.2 32.6% 17.5%);
+            --ring: hsl(217.2 91.2% 59.8%); --radius: 0.75rem;
+            --destructive: hsl(0 62.8% 30.6%); --destructive-foreground: hsl(0 85.7% 97.3%);
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background);
-            color: var(--foreground);
-        }
-        .card {
-            background-color: var(--card);
-            color: var(--card-foreground);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            transition: all 0.2s ease-in-out;
-        }
-        .card.selected {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px var(--primary);
-        }
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-        .label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--muted-foreground);
-            margin-bottom: 0.5rem;
-        }
-        .input {
-            display: flex;
-            width: 100%;
-            height: 2.5rem;
-            padding: 0.5rem 0.75rem;
-            background-color: var(--input);
-            border: 1px solid var(--border);
-            border-radius: calc(var(--radius) - 4px);
-            font-size: 0.875rem;
-        }
-        .input:focus {
-            outline: none;
-            border-color: var(--ring);
-            box-shadow: 0 0 0 2px var(--ring);
-        }
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: calc(var(--radius) - 4px);
-            font-weight: 600;
-            font-size: 1rem;
-            background-color: var(--primary);
-            color: var(--primary-foreground);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .btn-primary:hover {
-            background-color: hsl(217.2 91.2% 59.8% / 0.9);
-        }
-        .btn-primary:disabled {
-            background-color: var(--secondary);
-            color: var(--muted-foreground);
-            cursor: not-allowed;
-        }
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.9rem;
-            color: var(--muted-foreground);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--background); color: var(--foreground); }
+        .card { background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+        .card-title { font-size: 1.25rem; font-weight: 700; }
+        .label { display: block; font-size: 0.875rem; font-weight: 500; color: var(--muted-foreground); margin-bottom: 0.5rem; }
+        .input, .select, .textarea { display: flex; width: 100%; padding: 0.5rem 0.75rem; background-color: var(--input); border: 1px solid var(--border); border-radius: calc(var(--radius) - 4px); font-size: 0.875rem; transition: all 0.2s; }
+        .input, .select { height: 2.5rem; }
+        .textarea { min-height: 80px; }
+        .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 2px var(--ring); }
+        .btn-primary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 0.75rem 1rem; border-radius: calc(var(--radius) - 4px); font-weight: 600; font-size: 1rem; background-color: var(--primary); color: var(--primary-foreground); cursor: pointer; transition: background-color 0.2s; }
+        .btn-primary:hover { background-color: hsl(217.2 91.2% 59.8% / 0.9); }
+        .error-message { font-size: 0.75rem; color: var(--destructive-foreground); background-color: var(--destructive); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; }
     </style>
 </head>
-<body class="min-h-screen w-full flex items-center justify-center p-4 sm:p-8">
-    <main class="w-full max-w-5xl">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tighter">Gerador de Orçamento</h1>
-            <p class="text-muted-foreground mt-2 max-w-2xl mx-auto">Preencha os dados do cliente, selecione o plano desejado e envie a proposta com um clique.</p>
+<body class="min-h-screen w-full flex items-start justify-center p-4 sm:p-8">
+    <main class="w-full max-w-2xl space-y-6">
+        <div class="text-center">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tighter">Gerador de Orçamento para Parceiros</h1>
+            <p class="text-muted-foreground mt-2">Calcule os custos base e defina o valor final da proposta.</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            <div class="lg:col-span-1 sticky top-8">
-                 <div class="card">
-                    <h3 class="card-title mb-4">1. Dados do Cliente</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="clientName" class="label">Nome do Cliente</label>
-                            <input type="text" id="clientName" class="input" placeholder="Nome completo">
-                        </div>
-                        <div>
-                            <label for="clientEmail" class="label">Email do Cliente</label>
-                            <input type="email" id="clientEmail" class="input" placeholder="email@dominio.com">
-                        </div>
-                        <div>
-                            <label for="clientPhone" class="label">Telefone (Opcional)</label>
-                            <input type="tel" id="clientPhone" class="input" placeholder="(XX) XXXXX-XXXX">
-                        </div>
-                    </div>
+        <div class="card">
+            <h3 class="card-title mb-4">1. Dados do Cliente Final</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="clientName" class="label">Nome do Cliente</label>
+                    <input type="text" id="clientName" class="input" placeholder="Nome completo">
                 </div>
-                <div class="card mt-6">
-                    <h3 class="card-title mb-4">3. Enviar Proposta</h3>
-                    <p id="selectedPlanText" class="text-muted-foreground mb-4">Nenhum plano selecionado.</p>
-                     <button id="sendBudgetButton" class="btn-primary" disabled>Selecione um Plano</button>
-                     <div id="feedbackMessage" class="text-center mt-4 text-sm h-4"></div>
+                <div>
+                    <label for="clientEmail" class="label">Email</label>
+                    <input type="email" id="clientEmail" class="input" placeholder="cliente@email.com">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="clientPhone" class="label">Telefone (Opcional)</label>
+                    <input type="tel" id="clientPhone" class="input" placeholder="(XX) 9XXXX-XXXX">
                 </div>
             </div>
+        </div>
 
-            <div class="lg:col-span-2">
-                <h3 class="card-title mb-4 ml-2">2. Selecione o Plano</h3>
-                <div id="plans-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    </div>
+        <div class="card">
+            <h3 class="card-title mb-4">2. Escopo do Projeto</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div>
+                    <label for="conversationsPerDay" class="label">Conversas por Dia</label>
+                    <input type="number" id="conversationsPerDay" class="input" value="30" oninput="calculateCosts()">
+                </div>
+                <div>
+                    <label for="messagesPerConversation" class="label">Mensagens por Conversa</label>
+                    <input type="number" id="messagesPerConversation" class="input" value="15" oninput="calculateCosts()">
+                </div>
             </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title mb-4">3. Infraestrutura</h3>
+             <div class="space-y-4">
+                 <div>
+                    <label for="serverPlan" class="label">Configuração do Servidor</label>
+                    <select id="serverPlan" class="select" onchange="calculateCosts()">
+                        <option value="Basic">Básico (2 vCPU, 4GB RAM)</option>
+                        <option value="Standard">Padrão (4 vCPU, 8GB RAM)</option>
+                        <option value="Advanced">Avançado (8 vCPU, 16GB RAM)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="dbPlan" class="label">Banco de Dados de Alta Performance</label>
+                    <select id="dbPlan" class="select" onchange="calculateCosts()">
+                        <option value="Free">Básico (Limites baixos)</option>
+                        <option value="Pro">Profissional (Escalável)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="audioPlan" class="label">Módulo de Síntese de Voz (Áudio)</label>
+                    <select id="audioPlan" class="select" onchange="calculateCosts()">
+                        <option value="None">Nenhum</option>
+                        <option value="Starter">Starter (Até 30k caracteres)</option>
+                        <option value="Creator">Creator (Até 100k caracteres)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title mb-4">4. Requisitos e Processo do Cliente</h3>
+            <textarea id="clientRequirements" class="textarea" placeholder="Descreva aqui os detalhes da necessidade do cliente, como o processo de conversão, integrações desejadas, etc."></textarea>
+        </div>
+
+        <div class="card bg-secondary/30">
+            <h3 class="card-title mb-4">5. Custos Base e Valores Finais</h3>
+            <div class="bg-muted p-4 rounded-lg space-y-4">
+                <div class="text-center">
+                    <p class="text-sm text-muted-foreground">Seu Custo de Implantação (Base Anual)</p>
+                    <p id="implementationCost" class="text-2xl font-bold text-primary">R$ 0,00</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-muted-foreground">Sugestão de Recorrência Mensal (Custo x2)</p>
+                    <p id="monthlyRevenue" class="text-2xl font-bold text-primary">R$ 0,00</p>
+                </div>
+            </div>
+            <hr class="border-border my-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="finalImplementationValue" class="label">Valor de Implantação Acertado</label>
+                    <input type="number" id="finalImplementationValue" class="input" placeholder="Ex: 3500.00">
+                </div>
+                <div>
+                    <label for="finalMonthlyValue" class="label">Valor Mensal Acertado</label>
+                    <input type="number" id="finalMonthlyValue" class="input" placeholder="Ex: 497.00">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <button id="sendBudgetButton" class="btn-primary">Enviar Orçamento para Análise</button>
+            <div id="feedbackMessage" class="mt-4 text-center h-4"></div>
         </div>
     </main>
+
     <script>
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
 
-        const plans = [
-            {
-                id: 'basico',
-                name: 'Plano Básico',
-                price: 'R$ 1.497/mês',
-                features: [
-                    'Até 20 conversas por dia',
-                    'Conversas de curta duração',
-                    'Inteligência padrão',
-                    'Suporte Essencial'
-                ]
+        const pricing = {
+            usdRate: 5.40,
+            server: {
+                "Basic": { monthly_cost_brl: 89.99 },
+                "Standard": { monthly_cost_brl: 159.99 },
+                "Advanced": { monthly_cost_brl: 329.99 },
             },
-            {
-                id: 'medio',
-                name: 'Plano Médio',
-                price: 'R$ 2.997/mês',
-                features: [
-                    'Até 40 conversas por dia',
-                    'Conversas de média duração',
-                    'Inteligência otimizada',
-                    'Suporte Prioritário'
-                ],
-                recommended: true
+            database: {
+                "Free": { monthly_cost_usd: 0 },
+                "Pro": { monthly_cost_usd: 25 },
             },
-            {
-                id: 'avancado',
-                name: 'Plano Avançado',
-                price: 'R$ 5.997/mês',
-                features: [
-                    'Até 80 conversas por dia',
-                    'Conversas de longa duração',
-                    'Inteligência avançada',
-                    'Dashboard de métricas'
-                ]
+            audio: {
+                "None": { monthly_cost_usd: 0 },
+                "Starter": { monthly_cost_usd: 5 },
+                "Creator": { monthly_cost_usd: 22 },
             },
-            {
-                id: 'business',
-                name: 'Plano Business',
-                price: 'Consulte-nos',
-                features: [
-                    'Volume de conversas personalizado',
-                    'Interações complexas e longas',
-                    'Inteligência de ponta',
-                    'Gerente de conta dedicado'
-                ]
+            ai: {
+                // Custo por milhão de tokens para GPT-4o-mini (Input+Output avg)
+                cost_per_million_tokens_usd: 0.40
+            },
+            other_costs_brl: {
+                // Custo mensalizado de domínio e email
+                domain_email: (40.99 / 12) + 11.99
             }
-        ];
+        };
 
-        let selectedPlan = null;
+        function getVal(id) { return document.getElementById(id).value; }
+        function getNum(id) { return parseFloat(getVal(id)) || 0; }
         
-        const plansContainer = document.getElementById('plans-container');
-        const selectedPlanText = document.getElementById('selectedPlanText');
-        const sendButton = document.getElementById('sendBudgetButton');
-        const feedbackMessage = document.getElementById('feedbackMessage');
-        const clientNameInput = document.getElementById('clientName');
-        const clientEmailInput = document.getElementById('clientEmail');
+        function calculateCosts() {
+            const rate = pricing.usdRate;
 
+            // Custos de Infraestrutura
+            let monthlyCostBRL = 0;
+            monthlyCostBRL += pricing.server[getVal('serverPlan')].monthly_cost_brl;
+            monthlyCostBRL += pricing.other_costs_brl.domain_email;
 
-        function renderPlans() {
-            plansContainer.innerHTML = '';
-            plans.forEach(plan => {
-                const card = document.createElement('div');
-                card.className = `card cursor-pointer h-full flex flex-col ${plan.recommended ? 'border-primary' : ''}`;
-                card.dataset.planId = plan.id;
-                
-                card.innerHTML = `
-                    <div class="flex-grow">
-                        <h4 class="card-title">${plan.name}</h4>
-                        <p class="text-3xl font-bold my-4">${plan.price}</p>
-                        <ul class="space-y-3">
-                            ${plan.features.map(feature => `
-                                <li class="feature-item">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(142.1 76.2% 46.5%)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                    <span>${feature}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                    <div class="mt-6 text-center text-xs font-semibold uppercase text-primary">
-                        ${selectedPlan && selectedPlan.id === plan.id ? 'Plano Selecionado' : 'Selecionar este Plano'}
-                    </div>
-                `;
-                plansContainer.appendChild(card);
-            });
+            let monthlyCostUSD = 0;
+            monthlyCostUSD += pricing.database[getVal('dbPlan')].monthly_cost_usd;
+            monthlyCostUSD += pricing.audio[getVal('audioPlan')].monthly_cost_usd;
+            
+            // Custo de IA
+            const conversations = getNum('conversationsPerDay');
+            const messages = getNum('messagesPerConversation');
+            // Estimativa: 250 tokens por mensagem (ida e volta)
+            const dailyTokens = conversations * messages * 250;
+            const monthlyMillionTokens = (dailyTokens * 30) / 1000000;
+            monthlyCostUSD += monthlyMillionTokens * pricing.ai.cost_per_million_tokens_usd;
+
+            const totalMonthlyCost = monthlyCostBRL + (monthlyCostUSD * rate);
+            const totalAnnualCost = totalMonthlyCost * 12;
+            const suggestedMonthly = totalMonthlyCost * 2;
+
+            document.getElementById('implementationCost').textContent = `R$ ${totalAnnualCost.toFixed(2)}`;
+            document.getElementById('monthlyRevenue').textContent = `R$ ${suggestedMonthly.toFixed(2)}`;
         }
 
-        function updateSelectionState() {
-            const allCards = document.querySelectorAll('#plans-container .card');
-            allCards.forEach(c => c.classList.remove('selected'));
-
-            if (selectedPlan) {
-                const selectedCard = document.querySelector(`[data-plan-id="${selectedPlan.id}"]`);
-                if(selectedCard) {
-                    selectedCard.classList.add('selected');
-                }
-                selectedPlanText.textContent = `Plano selecionado: ${selectedPlan.name}`;
-                sendButton.textContent = 'Enviar Orçamento';
-                sendButton.disabled = false;
-            } else {
-                selectedPlanText.textContent = 'Nenhum plano selecionado.';
-                sendButton.textContent = 'Selecione um Plano';
-                sendButton.disabled = true;
-            }
-            renderPlans(); // Re-render para atualizar o texto do botão no card
+        function validateEmail(email) {
+            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
         }
-        
-        plansContainer.addEventListener('click', (event) => {
-            const card = event.target.closest('.card');
-            if (card) {
-                const planId = card.dataset.planId;
-                selectedPlan = plans.find(p => p.id === planId);
-                updateSelectionState();
-            }
-        });
+
+        function validatePhone(phone) {
+            if (!phone) return true; // Opcional
+            const re = /^\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4}$/;
+            return re.test(phone);
+        }
 
         async function sendBudget() {
-            const clientName = clientNameInput.value;
-            const clientEmail = clientEmailInput.value;
-            const clientPhone = document.getElementById('clientPhone').value;
+            const feedbackEl = document.getElementById('feedbackMessage');
+            feedbackEl.innerHTML = '';
 
-            if (!clientName || !clientEmail) {
-                feedbackMessage.textContent = "Preencha nome e email do cliente.";
-                feedbackMessage.style.color = "hsl(0 100% 50%)";
+            // Validação
+            const clientName = getVal('clientName');
+            const clientEmail = getVal('clientEmail');
+            const clientPhone = getVal('clientPhone');
+            const finalImplementation = getNum('finalImplementationValue');
+            const finalMonthly = getNum('finalMonthlyValue');
+
+            if (!clientName || !clientEmail || finalImplementation <= 0 || finalMonthly <= 0) {
+                feedbackEl.innerHTML = `<p class="error-message">Preencha todos os dados do cliente e os valores finais acertados.</p>`;
                 return;
             }
-            if (!selectedPlan) {
-                 feedbackMessage.textContent = "Selecione um plano.";
-                 feedbackMessage.style.color = "hsl(0 100% 50%)";
+            if (!validateEmail(clientEmail)) {
+                feedbackEl.innerHTML = `<p class="error-message">Formato de e-mail inválido.</p>`;
+                return;
+            }
+            if (!validatePhone(clientPhone)) {
+                feedbackEl.innerHTML = `<p class="error-message">Formato de telefone inválido.</p>`;
                 return;
             }
 
             const budgetData = {
-                source: "portal_parceiros",
-                clientInfo: {
-                    name: clientName,
-                    email: clientEmail,
-                    phone: clientPhone
+                source: "portal_parceiros_calculadora",
+                clientInfo: { name: clientName, email: clientEmail, phone: clientPhone },
+                projectScope: {
+                    conversationsPerDay: getNum('conversationsPerDay'),
+                    messagesPerConversation: getNum('messagesPerConversation'),
+                    clientRequirements: getVal('clientRequirements'),
                 },
-                quoteDetails: {
-                    planName: selectedPlan.name,
-                    planId: selectedPlan.id,
-                    price: selectedPlan.price,
-                    features: selectedPlan.features
+                infrastructure: {
+                    server: getVal('serverPlan'),
+                    database: getVal('dbPlan'),
+                    audio: getVal('audioPlan'),
+                },
+                costBasis: {
+                    implementation_base_cost_brl: document.getElementById('implementationCost').textContent,
+                    suggested_monthly_revenue_brl: document.getElementById('monthlyRevenue').textContent,
+                },
+                finalDeal: {
+                    implementation_value_brl: finalImplementation,
+                    monthly_revenue_brl: finalMonthly,
                 }
             };
             
-            feedbackMessage.textContent = "Enviando...";
-            feedbackMessage.style.color = "var(--foreground)";
-            sendButton.disabled = true;
-
+            feedbackEl.textContent = "Enviando...";
             try {
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(budgetData)
                 });
-                if(response.ok) {
-                    feedbackMessage.textContent = "Proposta enviada com sucesso!";
-                    feedbackMessage.style.color = "hsl(142.1 76.2% 46.5%)";
-                    clientNameInput.value = '';
-                    clientEmailInput.value = '';
-                    document.getElementById('clientPhone').value = '';
-                    selectedPlan = null;
-                    setTimeout(updateSelectionState, 2000);
-                } else {
-                    throw new Error(`Erro ${response.status}`);
-                }
-
-            } catch(error) {
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                feedbackEl.innerHTML = `<p class="text-green-400">Orçamento enviado com sucesso!</p>`;
+                document.getElementById('sendBudgetButton').form.reset();
+                calculateCosts();
+            } catch (error) {
                 console.error("Erro ao enviar webhook:", error);
-                feedbackMessage.textContent = "Falha no envio. Tente novamente.";
-                feedbackMessage.style.color = "hsl(0 100% 50%)";
-            } finally {
-                 sendButton.disabled = false;
+                feedbackEl.innerHTML = `<p class="error-message">Falha no envio. Tente novamente.</p>`;
             }
         }
         
-        sendButton.addEventListener('click', sendBudget);
-
-        // Initial render
-        renderPlans();
+        document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
+        window.onload = calculateCosts;
     </script>
 </body>
 </html>
