@@ -152,7 +152,7 @@
             const supportMonthlyCost = pricing.projectTiers[projectTierKey] ? pricing.projectTiers[projectTierKey].support_monthly_cost : pricing.projectTiers['Básico'].support_monthly_cost;
 
             const finalImplementationCost = implLaborCost + (totalMonthlyInfraCost * 12);
-            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 3);
+            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 2);
 
             document.getElementById('implementationCost').textContent = `R$ ${finalImplementationCost.toFixed(2)}`;
             document.getElementById('monthlyRevenue').textContent = `R$ ${finalMonthlyCost.toFixed(2)}`;
