@@ -88,14 +88,6 @@
                                     <label for="iaMessagesPerConvo" class="label">Msgs/Conversa</label>
                                     <input type="number" id="iaMessagesPerConvo" class="input" value="20">
                                 </div>
-                                <div>
-                                    <label for="iaMessageSize" class="label">Tamanho Msg</label>
-                                    <select id="iaMessageSize" class="select">
-                                        <option value="Curta">Curta</option>
-                                        <option value="Média">Média</option>
-                                        <option value="Longa">Longa</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -208,14 +200,16 @@
             let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd;
             
             // --- LÓGICA DE CÁLCULO DE IA CORRIGIDA ---
+            // --- LÓGICA DE CÁLCULO DE IA SIMPLIFICADA ---
             const monthlyClients = getNum('iaMonthlyClients');
             const messagesPerConvo = getNum('iaMessagesPerConvo');
             const totalMonthlyMessages = monthlyClients * messagesPerConvo;
             
             const totalInputTokens = totalMonthlyMessages * pricing.aiAverages.input_tokens_per_message;
             const totalOutputTokens = totalMonthlyMessages * pricing.aiAverages.output_tokens_per_message;
-        
+            
             const chatModelKey = getVal('chatgptModel');
+            // ... resto da função
             const modelPricing = pricing.chatgpt[chatModelKey];
             
             let aiCostUSD = 0;
@@ -344,22 +338,16 @@
             }
         }
         
-// Substitua o final do seu script por este bloco inteiro
-
-// --- Gatilhos de Eventos Centralizados ---
-
-// Lista de todos os campos que devem recalcular o custo ao serem alterados.
-const fieldsToMonitor = [
-    'hostingerVpsPlan', // ID CORRIGIDO
-    'supabasePlan',
-    'audioPlan',
-    'chatgptModel',
-    'iaMonthlyClients',
-    'iaMessagesPerConvo',
-    'iaMessageSize',
-    'audioMonthlyConvos',
-    'audioMinutesPerConvo'
-];
+    const fieldsToMonitor = [
+        'hostingerVpsPlan',
+        'supabasePlan',
+        'audioPlan',
+        'chatgptModel',
+        'iaMonthlyClients',
+        'iaMessagesPerConvo',
+        'audioMonthlyConvos',
+        'audioMinutesPerConvo'
+    ];
 
     fieldsToMonitor.forEach(id => {
         const element = document.getElementById(id);
