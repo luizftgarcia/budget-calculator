@@ -346,15 +346,32 @@
     'chatgptModel', 'iaMonthlyClients', 'iaMessagesPerConvo', 'iaMessageSize',
     'audioMonthlyConvos', 'audioMinutesPerConvo'
 ];
+// Substitua o final do seu script por este bloco inteiro
+
+// --- Gatilhos de Eventos Centralizados ---
+
+// Lista de todos os campos que devem recalcular o custo ao serem alterados.
+const fieldsToMonitor = [
+    'hostingerVpsPlan', // ID CORRIGIDO
+    'supabasePlan',
+    'audioPlan',
+    'chatgptModel',
+    'iaMonthlyClients',
+    'iaMessagesPerConvo',
+    'iaMessageSize',
+    'audioMonthlyConvos',
+    'audioMinutesPerConvo'
+];
 
     fieldsToMonitor.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
+            // Usamos 'change' para selects e 'input' para campos de número/texto
             element.addEventListener('input', calculateCosts);
             element.addEventListener('change', calculateCosts);
         }
     });
-
+    
     // Adiciona os gatilhos específicos para a sincronização de Nível e Horas
     document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
     document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
@@ -364,6 +381,7 @@
     
     // --- Inicialização da Página ---
     function initializePage() {
+        // Define as horas iniciais e dispara o primeiro cálculo
         updateHoursFromTier();
     }
     window.onload = initializePage;
