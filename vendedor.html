@@ -158,27 +158,28 @@
     <script>
         const WEBHOOK_URL = "https://server-webhook.convertai.com.br/webhook/listener-budget";
         // Substitua todo o seu objeto 'pricing' por este bloco corrigido
+        // Substitua todo o seu objeto 'pricing' por este
         const pricing = {
             usdRate: 5.40,
             impl_hourly_rate_brl: 160,
             projectTiers: {
-                "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280,   tokens_per_message: 1200 },
-                "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920,   tokens_per_message: 1650 },
-                "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560,   tokens_per_message: 2250 },
-                "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200,   tokens_per_message: 3000 }
+                "Básico":     { impl_setup_hours: 24,  support_monthly_cost: 1280 },
+                "Médio":      { impl_setup_hours: 56,  support_monthly_cost: 1920 },
+                "Avançado":   { impl_setup_hours: 112, support_monthly_cost: 2560 },
+                "Enterprise": { impl_setup_hours: 224, support_monthly_cost: 3200 }
             },
+            // Objeto de IA reestruturado para input/output
             chatgpt: { 
-                "GPT-3.5-Turbo": { cost_per_million_tokens_usd: 1.00 },
-                "GPT-4.1 Nano":  { cost_per_million_tokens_usd: 0.21 },  // Média de in/out
-                "GPT-4o Mini":   { cost_per_million_tokens_usd: 0.375 }, // Média de in/out
-                "GPT-4.1 Mini":  { cost_per_million_tokens_usd: 1.00 },  // Média de in/out
-                "GPT-4o":        { cost_per_million_tokens_usd: 10.00 }, // Média de in/out
-                "GPT-4.1 Turbo": { cost_per_million_tokens_usd: 5.00 }   // Média de in/out
+                "gpt-4.1-nano": { input_cost_per_million_tokens_usd: 0.10, output_cost_per_million_tokens_usd: 0.40 },
+                "gpt-4.1-mini": { input_cost_per_million_tokens_usd: 0.40, output_cost_per_million_tokens_usd: 1.60 },
+                "gpt-4o-mini":  { input_cost_per_million_tokens_usd: 0.15, output_cost_per_million_tokens_usd: 0.60 },
+                "gpt-4.1":      { input_cost_per_million_tokens_usd: 2.00, output_cost_per_million_tokens_usd: 8.00 },
+                "gpt-4o":       { input_cost_per_million_tokens_usd: 5.00, output_cost_per_million_tokens_usd: 15.00 }
             },
-            messageSizes: {
-                "Curta": { tokens: 200 },
-                "Média": { tokens: 500 },
-                "Longa": { tokens: 1000 }
+            // Nova média de tokens por mensagem
+            aiAverages: {
+                input_tokens_per_message: 590,
+                output_tokens_per_message: 18.3
             },
             hostingerVps: { "KVM 2": { monthly_cost_brl: 89.99 }, "KVM 4": { monthly_cost_brl: 159.99 } },
             database: { "Gratuito": { monthly_cost_usd: 0 }, "Profissional": { monthly_cost_usd: 25 } },
@@ -197,23 +198,32 @@
         function getNum(id) { return parseFloat(getVal(id)) || 0; }
 
         // Substitua sua função calculateCosts() inteira por esta:
+        // Substitua sua função calculateCosts() inteira por esta
         function calculateCosts() {
             const rate = pricing.usdRate;
             let monthlyInfraBRL = pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
             let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd;
             
-            // Lógica de cálculo de IA baseada em uso
+            // --- LÓGICA DE CÁLCULO DE IA CORRIGIDA ---
             const monthlyClients = getNum('iaMonthlyClients');
             const messagesPerConvo = getNum('iaMessagesPerConvo');
             const totalMonthlyMessages = monthlyClients * messagesPerConvo;
-            const messageSizeKey = getVal('iaMessageSize');
-            const tokensPerMessage = pricing.messageSizes[messageSizeKey].tokens;
-            const totalMonthlyTokens = totalMonthlyMessages * tokensPerMessage;
-            const chatModelKey = getVal('chatgptModel');
-            const costPerMillionTokens = pricing.chatgpt[chatModelKey] ? pricing.chatgpt[chatModelKey].cost_per_million_tokens_usd : 0;
-            monthlyInfraUSD += (totalMonthlyTokens / 1000000) * costPerMillionTokens;
             
-            // Lógica de cálculo de Voz baseada em uso
+            const totalInputTokens = totalMonthlyMessages * pricing.aiAverages.input_tokens_per_message;
+            const totalOutputTokens = totalMonthlyMessages * pricing.aiAverages.output_tokens_per_message;
+        
+            const chatModelKey = getVal('chatgptModel');
+            const modelPricing = pricing.chatgpt[chatModelKey];
+            
+            let aiCostUSD = 0;
+            if (modelPricing) {
+                const inputCost = (totalInputTokens / 1000000) * modelPricing.input_cost_per_million_tokens_usd;
+                const outputCost = (totalOutputTokens / 1000000) * modelPricing.output_cost_per_million_tokens_usd;
+                aiCostUSD = inputCost + outputCost;
+            }
+            monthlyInfraUSD += aiCostUSD;
+            
+            // --- Lógica de cálculo de Voz (mantida) ---
             const audioPlanKey = getVal('audioPlan');
             const audioPlan = pricing.audio[audioPlanKey];
             const audioMonthlyConvos = getNum('audioMonthlyConvos');
@@ -237,8 +247,7 @@
             const supportMonthlyCost = pricing.projectTiers[projectTierKey] ? pricing.projectTiers[projectTierKey].support_monthly_cost : pricing.projectTiers['Básico'].support_monthly_cost;
         
             const finalImplementationCost = implLaborCost + (totalMonthlyInfraCost * 12);
-            // CORREÇÃO do multiplicador para 3
-            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 2);
+            const finalMonthlyCost = supportMonthlyCost + (totalMonthlyInfraCost * 3);
         
             document.getElementById('implementationCost').textContent = `R$ ${finalImplementationCost.toFixed(2)}`;
             document.getElementById('monthlyRevenue').textContent = `R$ ${finalMonthlyCost.toFixed(2)}`;
@@ -332,13 +341,33 @@
             }
         }
         
-        document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
-        
-        // --- Inicialização da Página ---
-        function initializePage() {
-            updateHoursFromTier();
+        const fieldsToMonitor = [
+    'projectTier', 'implementationHours', 'serverPlan', 'supabasePlan', 'audioPlan',
+    'chatgptModel', 'iaMonthlyClients', 'iaMessagesPerConvo', 'iaMessageSize',
+    'audioMonthlyConvos', 'audioMinutesPerConvo'
+];
+
+    fieldsToMonitor.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', calculateCosts);
+            element.addEventListener('change', calculateCosts);
         }
-        window.onload = initializePage;
+    });
+
+    // Adiciona os gatilhos específicos para a sincronização de Nível e Horas
+    document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
+    document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
+    
+    // Gatilho para o botão de envio
+    document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
+    
+    // --- Inicialização da Página ---
+    function initializePage() {
+        updateHoursFromTier();
+    }
+    window.onload = initializePage;
+
     </script>
 </body>
 </html>
