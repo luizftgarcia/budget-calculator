@@ -201,24 +201,24 @@
         // Substitua sua função calculateCosts() inteira por esta
         // Substitua sua função calculateCosts() inteira por esta versão corrigida
         function calculateCosts() {
+            console.log("CALCULANDO CUSTOS AGORA ->", new Date().toLocaleTimeString()); // <-- LINHA DE TESTE
+            
+            // O resto do código da função continua igual...
             const rate = pricing.usdRate;
             let monthlyInfraBRL = pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
             let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd;
             
-            // --- LÓGICA DE CÁLCULO DE IA CORRIGIDA E SIMPLIFICADA ---
             const monthlyClients = getNum('iaMonthlyClients');
             const messagesPerConvo = getNum('iaMessagesPerConvo');
             const totalMonthlyMessages = monthlyClients * messagesPerConvo;
-            
+            const messageSizeKey = getVal('iaMessageSize');
+            const tokensPerMessage = pricing.messageSizes[messageSizeKey].tokens;
+            const totalMonthlyTokens = totalMonthlyMessages * tokensPerMessage;
             const chatModelKey = getVal('chatgptModel');
-            // Pega o custo por 1000 mensagens diretamente do modelo selecionado
             const costPer1kMessages = pricing.chatgpt[chatModelKey] ? pricing.chatgpt[chatModelKey].cost_per_1k_messages_usd : 0;
-            
-            // Calcula o custo total de IA e adiciona ao subtotal em dólar
             const aiCostUSD = (totalMonthlyMessages / 1000) * costPer1kMessages;
             monthlyInfraUSD += aiCostUSD;
             
-            // --- Lógica de cálculo de Voz (mantida) ---
             const audioPlanKey = getVal('audioPlan');
             const audioPlan = pricing.audio[audioPlanKey];
             const audioMonthlyConvos = getNum('audioMonthlyConvos');
@@ -234,7 +234,6 @@
             }
             monthlyInfraUSD += audioCostUSD;
         
-            // --- Cálculos Finais (mantidos) ---
             const totalMonthlyInfraCost = monthlyInfraBRL + (monthlyInfraUSD * rate);
             const projectTierKey = getVal('projectTier');
             const implHours = getNum('implementationHours');
@@ -362,19 +361,28 @@ const fieldsToMonitor = [
         }
     });
     
-    // Adiciona os gatilhos específicos para a sincronização de Nível e Horas
-    document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
-    document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
-    
-    // Gatilho para o botão de envio
-    document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
-    
-    // --- Inicialização da Página ---
-    function initializePage() {
-        // Define as horas iniciais e dispara o primeiro cálculo
-        updateHoursFromTier();
-    }
-    window.onload = initializePage;
+
+document.getElementById('projectTier').addEventListener('change', updateHoursFromTier);
+document.getElementById('implementationHours').addEventListener('input', updateTierFromHours);
+document.getElementById('serverPlan').addEventListener('change', calculateCosts);
+document.getElementById('supabasePlan').addEventListener('change', calculateCosts);
+document.getElementById('audioPlan').addEventListener('change', calculateCosts);
+document.getElementById('audioMonthlyConvos').addEventListener('input', calculateCosts);
+document.getElementById('audioMinutesPerConvo').addEventListener('input', calculateCosts);
+document.getElementById('chatgptModel').addEventListener('change', calculateCosts);
+document.getElementById('iaMonthlyClients').addEventListener('input', calculateCosts);
+document.getElementById('iaMessagesPerConvo').addEventListener('input', calculateCosts);
+document.getElementById('iaMessageSize').addEventListener('change', calculateCosts);
+
+// Gatilho para o botão de envio
+document.getElementById('sendBudgetButton').addEventListener('click', sendBudget);
+
+// --- Inicialização da Página ---
+function initializePage() {
+    // Define as horas iniciais e dispara o primeiro cálculo
+    updateHoursFromTier();
+}
+window.onload = initializePage;
 
     </script>
 </body>
