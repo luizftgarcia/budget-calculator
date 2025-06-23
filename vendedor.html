@@ -199,28 +199,23 @@
 
         // Substitua sua função calculateCosts() inteira por esta:
         // Substitua sua função calculateCosts() inteira por esta
+        // Substitua sua função calculateCosts() inteira por esta versão corrigida
         function calculateCosts() {
             const rate = pricing.usdRate;
             let monthlyInfraBRL = pricing.hostingerVps[getVal('hostingerVpsPlan')].monthly_cost_brl + pricing.other_costs_brl.domain_email;
             let monthlyInfraUSD = pricing.database[getVal('supabasePlan')].monthly_cost_usd;
             
-            // --- LÓGICA DE CÁLCULO DE IA CORRIGIDA ---
+            // --- LÓGICA DE CÁLCULO DE IA CORRIGIDA E SIMPLIFICADA ---
             const monthlyClients = getNum('iaMonthlyClients');
             const messagesPerConvo = getNum('iaMessagesPerConvo');
             const totalMonthlyMessages = monthlyClients * messagesPerConvo;
             
-            const totalInputTokens = totalMonthlyMessages * pricing.aiAverages.input_tokens_per_message;
-            const totalOutputTokens = totalMonthlyMessages * pricing.aiAverages.output_tokens_per_message;
-        
             const chatModelKey = getVal('chatgptModel');
-            const modelPricing = pricing.chatgpt[chatModelKey];
+            // Pega o custo por 1000 mensagens diretamente do modelo selecionado
+            const costPer1kMessages = pricing.chatgpt[chatModelKey] ? pricing.chatgpt[chatModelKey].cost_per_1k_messages_usd : 0;
             
-            let aiCostUSD = 0;
-            if (modelPricing) {
-                const inputCost = (totalInputTokens / 1000000) * modelPricing.input_cost_per_million_tokens_usd;
-                const outputCost = (totalOutputTokens / 1000000) * modelPricing.output_cost_per_million_tokens_usd;
-                aiCostUSD = inputCost + outputCost;
-            }
+            // Calcula o custo total de IA e adiciona ao subtotal em dólar
+            const aiCostUSD = (totalMonthlyMessages / 1000) * costPer1kMessages;
             monthlyInfraUSD += aiCostUSD;
             
             // --- Lógica de cálculo de Voz (mantida) ---
@@ -239,8 +234,8 @@
             }
             monthlyInfraUSD += audioCostUSD;
         
+            // --- Cálculos Finais (mantidos) ---
             const totalMonthlyInfraCost = monthlyInfraBRL + (monthlyInfraUSD * rate);
-        
             const projectTierKey = getVal('projectTier');
             const implHours = getNum('implementationHours');
             const implLaborCost = implHours * pricing.impl_hourly_rate_brl;
